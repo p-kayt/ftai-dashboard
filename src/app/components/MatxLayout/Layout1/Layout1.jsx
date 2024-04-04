@@ -8,7 +8,7 @@ import useSettings from "app/hooks/useSettings";
 import Layout1Topbar from "./Layout1Topbar";
 import Layout1Sidenav from "./Layout1Sidenav";
 
-import Footer from "app/components/Footer";
+// import Footer from "app/components/Footer";
 import { MatxSuspense } from "app/components";
 import { SecondarySidebar } from "app/components/SecondarySidebar";
 import SidenavTheme from "app/components/MatxTheme/SidenavTheme/SidenavTheme";

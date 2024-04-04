@@ -1,5 +1,10 @@
 import { memo } from "react";
-import { Hidden, Switch, Box, styled, useTheme } from "@mui/material";
+import {
+  // Hidden, Switch,
+  Box,
+  styled,
+  useTheme
+} from "@mui/material";
 
 import useSettings from "app/hooks/useSettings";
 
@@ -46,7 +51,10 @@ const NavListBox = styled(Box)({
 
 const Layout1Sidenav = () => {
   const theme = useTheme();
-  const { settings, updateSettings } = useSettings();
+  const {
+    settings
+    // updateSettings
+  } = useSettings();
   const leftSidebar = settings.layout1Settings.leftSidebar;
   const { mode, bgImgURL } = leftSidebar;
 
@@ -62,13 +70,13 @@ const Layout1Sidenav = () => {
 
   const primaryRGB = convertHexToRGB(theme.palette.primary.main);
 
-  const updateSidebarMode = (sidebarSettings) => {
-    updateSettings({ layout1Settings: { leftSidebar: { ...sidebarSettings } } });
-  };
+  // const updateSidebarMode = (sidebarSettings) => {
+  //   updateSettings({ layout1Settings: { leftSidebar: { ...sidebarSettings } } });
+  // };
 
-  const handleSidenavToggle = () => {
-    updateSidebarMode({ mode: mode === "compact" ? "full" : "compact" });
-  };
+  // const handleSidenavToggle = () => {
+  //   updateSidebarMode({ mode: mode === "compact" ? "full" : "compact" });
+  // };
 
   return (
     <SidebarNavRoot image={bgImgURL} bg={primaryRGB} width={getSidenavWidth()}>
