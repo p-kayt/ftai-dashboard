@@ -32,6 +32,15 @@ export const navigations = [
     name: "Users",
     icon: "people",
     path: "/users/user"
+  },
+  {
+    label: "Simulation",
+    type: "label"
+  },
+  {
+    name: "Shipping",
+    icon: "car",
+    path: "/"
   }
   // {
   //   label: "PAGES",
