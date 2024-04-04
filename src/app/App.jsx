@@ -9,18 +9,22 @@ import SettingsProvider from "./contexts/SettingsContext";
 import routes from "./routes";
 // FAKE SERVER
 import "../fake-db";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+const queryClient = new QueryClient();
 export default function App() {
   const content = useRoutes(routes);
 
   return (
     <SettingsProvider>
-      <AuthProvider>
-        <MatxTheme>
-          <CssBaseline />
-          {content}
-        </MatxTheme>
-      </AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <MatxTheme>
+            <CssBaseline />
+            {content}
+          </MatxTheme>
+        </AuthProvider>
+      </QueryClientProvider>
     </SettingsProvider>
   );
 }

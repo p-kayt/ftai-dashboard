@@ -74,14 +74,14 @@ const Layout1Sidenav = () => {
     <SidebarNavRoot image={bgImgURL} bg={primaryRGB} width={getSidenavWidth()}>
       <NavListBox>
         <Brand>
-          <Hidden smDown>
+          {/* <Hidden smDown>
             <Switch
               onChange={handleSidenavToggle}
               checked={leftSidebar.mode !== "full"}
               color="secondary"
               size="small"
             />
-          </Hidden>
+          </Hidden> */}
         </Brand>
         <Sidenav />
       </NavListBox>
