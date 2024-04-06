@@ -14,7 +14,7 @@ import {
   CircularProgress
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { imageWithUrl } from "api/firebaseConfig";
 import {
   addNewProduct,
@@ -37,6 +37,7 @@ import { useState } from "react";
 import Swal from "sweetalert2";
 
 const Products = () => {
+  const queryClient = useQueryClient();
   const {
     data: products,
     isLoading,
@@ -70,6 +71,7 @@ const Products = () => {
     mutationKey: ["deleteProductById"],
     mutationFn: (id) => deleteProductById({ id }),
     onSuccess: () => {
+      queryClient.invalidateQueries("products");
       console.log("success");
     },
     onError: (error) => {
@@ -81,6 +83,7 @@ const Products = () => {
     mutationKey: ["addProduct"],
     mutationFn: (data) => addNewProduct(data),
     onSuccess: () => {
+      queryClient.invalidateQueries("products");
       console.log("add success");
     },
     onError: (error) => {
@@ -92,6 +95,7 @@ const Products = () => {
     mutationKey: ["updateProduct"],
     mutationFn: (data) => updateProduct(data),
     onSuccess: () => {
+      queryClient.invalidateQueries("products");
       console.log("update success");
     },
     onError: (error) => {
@@ -140,6 +144,7 @@ const Products = () => {
         deleteMutation.mutate(id, {
           onSuccess: () => {
             console.log("success");
+            queryClient.invalidateQueries("products");
             Swal.fire("Deleted!", "Your file has been deleted.", "success");
           },
           onError: (error) => {
@@ -158,6 +163,7 @@ const Products = () => {
       { data },
       {
         onSuccess: () => {
+          queryClient.invalidateQueries("products");
           Swal.fire("Added!", "Your item has been added.", "success");
         },
         onError: (error) => {
@@ -173,6 +179,7 @@ const Products = () => {
       { data },
       {
         onSuccess: () => {
+          queryClient.invalidateQueries("products");
           Swal.fire("Added!", "Your item has been updated.", "success");
         },
         onError: (error) => {
@@ -181,8 +188,6 @@ const Products = () => {
       }
     );
   };
-
-  const fireBaseImgUpload = () => {};
 
   const columns = [
     {
