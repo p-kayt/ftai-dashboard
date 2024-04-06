@@ -33,6 +33,13 @@ export const deleteProductById = async (props) => {
 
 export const addNewProduct = async (props) => {
   const { data } = props;
-  const res = await instance.post("/api/product/" + data);
+  const res = await instance.post("/api/product", data);
+  return res.data;
+};
+
+export const updateProduct = async (props) => {
+  const { id, data } = props;
+  // console.log(props);
+  const res = await instance.put("/api/product/" + id, data);
   return res.data;
 };
