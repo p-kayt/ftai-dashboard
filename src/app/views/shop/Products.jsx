@@ -10,7 +10,6 @@ import {
   Paper,
   Select,
   TextField,
-  Link,
   CircularProgress
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
@@ -28,13 +27,10 @@ import {
 } from "api/productApi";
 import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
-import { forEach } from "lodash";
 import React from "react";
-
-import { useEffect } from "react";
-import { useRef } from "react";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
 
 const Products = () => {
   const queryClient = useQueryClient();
@@ -72,10 +68,10 @@ const Products = () => {
     mutationFn: (id) => deleteProductById({ id }),
     onSuccess: () => {
       queryClient.invalidateQueries("products");
-      console.log("success");
+      // console.log("success");
     },
     onError: (error) => {
-      console.log(error);
+      // console.log(error);
     }
   });
 
@@ -84,22 +80,22 @@ const Products = () => {
     mutationFn: (data) => addNewProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries("products");
-      console.log("add success");
+      // console.log("add success");
     },
     onError: (error) => {
-      console.log(error);
+      // console.log(error);
     }
   });
 
   const updateMutation = useMutation({
     mutationKey: ["updateProduct"],
-    mutationFn: (data) => updateProduct(data),
+    mutationFn: ({ id, data }) => updateProduct({ id, data }),
     onSuccess: () => {
       queryClient.invalidateQueries("products");
-      console.log("update success");
+      // console.log("update success");
     },
     onError: (error) => {
-      console.log(error);
+      // console.log(error);
     }
   });
 
@@ -126,8 +122,8 @@ const Products = () => {
     setOpen(true);
     setFunc("edit");
     setImagesFetched(false);
-    // console.log("Edit: ", id);
-    // console.log("product", editedProduct);
+    // // console.log("Edit: ", id);
+    // // console.log("product", editedProduct);
   };
 
   const handleDelete = (id) => {
@@ -143,50 +139,59 @@ const Products = () => {
       if (result.isConfirmed) {
         deleteMutation.mutate(id, {
           onSuccess: () => {
-            console.log("success");
+            // console.log("success");
             queryClient.invalidateQueries("products");
             Swal.fire("Deleted!", "Your file has been deleted.", "success");
           },
           onError: (error) => {
-            console.log(error);
+            // console.log(error);
             Swal.fire("Error!", "An error occurred while deleting the item.", "error");
           }
         });
-        console.log("Delete: ", id);
+        // console.log("Delete: ", id);
       }
     });
   };
 
   const handleAdd = (data) => {
-    console.log("add", data);
-    addMutation.mutate(
-      { data },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries("products");
-          Swal.fire("Added!", "Your item has been added.", "success");
-        },
-        onError: (error) => {
-          Swal.fire("Error!", "An error occurred while adding the item.", "error");
-        }
+    // console.log("add", data);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to add an item. This item will be avaliable on shop pages",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, add it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        addMutation.mutate(
+          { data },
+          {
+            onSuccess: () => {
+              queryClient.invalidateQueries("products");
+              Swal.fire("Added!", "Your item has been added.", "success");
+            },
+            onError: (error) => {
+              Swal.fire("Error!", "An error occurred while adding the item.", "error");
+            }
+          }
+        );
       }
-    );
+    });
   };
 
   const handleUpdate = (data) => {
-    console.log("update", data);
-    updateMutation.mutate(
-      { data },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries("products");
-          Swal.fire("Added!", "Your item has been updated.", "success");
-        },
-        onError: (error) => {
-          Swal.fire("Error!", "An error occurred while updating the item.", "error");
-        }
+    // console.log("update", data);
+    updateMutation.mutate(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("products");
+        Swal.fire("Updated!", "Your item has been updated.", "success");
+      },
+      onError: (error) => {
+        Swal.fire("Error!", "An error occurred while updating the item.", "error");
       }
-    );
+    });
   };
 
   const columns = [
@@ -343,38 +348,51 @@ const Modal = ({
   setImagesFetched
 }) => {
   const handleFormSubmit = (values) => {
-    let newProduct = {
-      name: values.name,
-      description: values.description,
-      defaultImage: values.images[0].url,
-      tryOnImage: values.tryOnImage || "",
-      canTryOn: values.canTryOn,
-      edgeImage: values.edgeImage,
-      category: values.category,
-      brand: values.brand,
-      // properties: [],
-      images: values.images.map((item) => {
-        return { url: item.url };
-      }),
-      productVariants: values.productVariants
-    };
-
-    if (values.subCategories) {
-      newProduct = {
-        ...newProduct,
-        category: {
-          ...newProduct.category,
-          subCategories: [values.subCategories]
-        }
-      };
-    }
-    setProduct(newProduct);
-    // console.log("values", values);
-    // console.log("new", newProduct);
+    // setProduct(newProduct);
     if (type === "create") {
+      let newProduct = {
+        name: values.name,
+        description: values.description,
+        defaultImage: values.images[0].url,
+        tryOnImage: values.tryOnImage,
+        canTryOn: values.canTryOn,
+        edgeImage: values.edgeImage,
+        categoryId: values.categoryId,
+        brandId: values.brandId,
+        // properties: [],
+        images: values.images.map((item) => {
+          return { url: item.url };
+        }),
+        productVariants: values.productVariants
+      };
       addCall(newProduct);
     } else {
-      updateCall({ id: initProduct.id, data: newProduct });
+      //filter and assign obj
+      const obj1 = { ...initProduct };
+      // console.log(obj1.hasOwnProperty("brand"));
+      delete obj1.brand;
+      delete obj1.category;
+      let result = Object.assign({}, obj1, values);
+      // replace variant
+      result.productVariants = values.productVariants.map((variant) => {
+        let size = sizes.find((size) => size.id === variant.sizeId);
+        let color = colors.find((color) => color.id === variant.colorId);
+
+        return {
+          ...variant,
+          productId: initProduct.id,
+          size: size,
+          color: color
+        };
+      });
+      // Replace imageUrl in images array
+      result.images = values.images.map((image) => {
+        return {
+          imageUrl: image.url
+        };
+      });
+
+      updateCall({ id: initProduct.id, data: result });
     }
     setOpen(false);
   };
@@ -386,13 +404,13 @@ const Modal = ({
     tryOnImage: null,
     canTryOn: false,
     edgeImage: null,
-    category: categories[0],
-    brand: brands[0],
+    categoryId: categories[0].id,
+    brandId: brands[0].id,
     images: [],
     productVariants: [
       {
-        color: colors[0],
-        size: sizes[0],
+        colorId: colors[0].id,
+        sizeId: sizes[0].id,
         quantity: 1,
         price: 0
       }
@@ -400,7 +418,7 @@ const Modal = ({
   };
 
   const [initData, setInitData] = useState();
-
+  // console.log(initProduct);
   if (type === "edit") {
     if (!imagesFetched) {
       let newImgs = [];
@@ -421,11 +439,17 @@ const Modal = ({
             tryOnImage: initProduct.tryOnImage,
             canTryOn: initProduct.canTryOn,
             edgeImage: initProduct.edgeImage,
-            category: initProduct.category,
-            brand: initProduct.brand,
-            productVariants: initProduct.productVariants,
+            categoryId: initProduct.category.id,
+            brandId: initProduct.brand.id,
+            productVariants: initProduct.productVariants.map((variant) => ({
+              colorId: variant.colorId,
+              sizeId: variant.sizeId,
+              quantity: variant.quantity,
+              price: variant.price
+            })),
             images: newImgs
           });
+          // console.log(initData);
           setImagesFetched(true); // Set imagesFetched to true after images have been fetched
         })
         .catch((error) => {
@@ -433,6 +457,33 @@ const Modal = ({
         });
     }
   }
+
+  const imageSchema = Yup.object().shape({
+    // Define validation for each property of the image object
+    name: Yup.string().required("Required"),
+    url: Yup.string().url("Must be a valid URL").required("Required")
+    // Add other properties as needed
+  });
+
+  const validate = Yup.object().shape({
+    name: Yup.string().required("Required"),
+    description: Yup.string().required("Required"),
+    defaultImage: Yup.string().nullable(),
+    tryOnImage: Yup.string().nullable(),
+    canTryOn: Yup.boolean(),
+    edgeImage: Yup.string().nullable(),
+    categoryId: Yup.string().nullable(),
+    brandId: Yup.string().nullable(),
+    images: Yup.array().of(imageSchema).min(1, "At least one image is required"),
+    productVariants: Yup.array().of(
+      Yup.object().shape({
+        colorId: Yup.string().nullable(),
+        sizeId: Yup.string().nullable(),
+        quantity: Yup.number().min(1),
+        price: Yup.number().min(0)
+      })
+    )
+  });
 
   return (
     <div>
@@ -471,8 +522,9 @@ const Modal = ({
           <Formik
             onSubmit={handleFormSubmit}
             initialValues={type === "create" ? createData : initData}
+            validationSchema={validate}
           >
-            {({ values, handleChange, handleSubmit, setFieldValue }) => (
+            {({ values, handleChange, handleSubmit, setFieldValue, errors, touched }) => (
               <form
                 style={{
                   display: "flex",
@@ -491,8 +543,10 @@ const Modal = ({
                     style={{ width: "100%" }}
                     name="name"
                     label="Name"
-                    value={values?.name}
+                    value={values.name}
                     onChange={handleChange}
+                    error={touched.name && !!errors.name}
+                    helperText={touched.name && errors.name}
                   />
                   <TextField
                     style={{ width: "100%" }}
@@ -501,8 +555,10 @@ const Modal = ({
                     label="Description"
                     multiline
                     row={2}
-                    value={values?.description}
+                    value={values.description}
                     onChange={handleChange}
+                    error={touched.description && !!errors.description}
+                    helperText={touched.description && errors.description}
                   />
                   {/* <TextField
                   style={{ width: "100%" }}
@@ -586,6 +642,9 @@ const Modal = ({
                             </Button>
                           </div>
                         ))}
+                      {errors.images && touched.images ? (
+                        <div style={{ color: "red" }}>{errors.images}</div>
+                      ) : null}
                     </div>
                   </div>
                   {/* <div style={{ display: "flex", flexDirection: "row", width: "100%" }}> */}
@@ -626,15 +685,15 @@ const Modal = ({
                       <InputLabel id="brand-label">Brand</InputLabel>
                       <Select
                         style={{ width: "150px" }}
-                        name="brand"
-                        labelid="brand-label"
-                        value={values.brand}
+                        name="brandId"
+                        labelId="brand-label"
+                        value={values.brandId}
                         onChange={handleChange}
-                        renderValue={(brand) => brand.name}
+                        renderValue={(brandId) => brands.find((brand) => brand.id === brandId).name}
                       >
-                        {brands.map((brands) => (
-                          <MenuItem key={brands.id} value={brands}>
-                            {brands.name}
+                        {brands.map((brand) => (
+                          <MenuItem key={brand.id} value={brand.id}>
+                            {brand.name}
                           </MenuItem>
                         ))}
                       </Select>
@@ -643,14 +702,17 @@ const Modal = ({
                       <div>
                         <InputLabel id="cate-label">Category</InputLabel>
                         <Select
-                          name="category"
+                          name="categoryId"
                           labelid="cate-label"
-                          value={values.category}
+                          style={{ width: "150px" }}
+                          value={values.categoryId}
                           onChange={handleChange}
-                          renderValue={(category) => category.name}
+                          renderValue={(categoryId) =>
+                            categories.find((category) => category.id === categoryId).name
+                          }
                         >
                           {categories.map((category) => (
-                            <MenuItem key={category.id} value={category}>
+                            <MenuItem key={category.id} value={category.id}>
                               {category.name}
                             </MenuItem>
                           ))}
@@ -699,15 +761,17 @@ const Modal = ({
                               <div>
                                 <InputLabel id={`color-label-${index}`}>Color</InputLabel>
                                 <Select
-                                  name={`productVariants[${index}].color`}
+                                  name={`productVariants[${index}].colorId`}
                                   style={{ width: "120px" }}
-                                  labelid={`color-label-${index}`}
-                                  value={variant.color}
+                                  labelId={`color-label-${index}`}
+                                  value={variant.colorId}
                                   onChange={handleChange}
-                                  renderValue={(color) => color.colorCode}
+                                  renderValue={(colorId) =>
+                                    colors.find((color) => color.id === colorId).colorCode
+                                  }
                                 >
                                   {colors.map((color) => (
-                                    <MenuItem key={color.id} value={color}>
+                                    <MenuItem key={color.id} value={color.id}>
                                       <div
                                         style={{
                                           display: "flex",
@@ -735,15 +799,17 @@ const Modal = ({
                               <div>
                                 <InputLabel id={`size-label-${index}`}>Size</InputLabel>
                                 <Select
-                                  name={`productVariants[${index}].size`}
+                                  name={`productVariants[${index}].sizeId`}
                                   style={{ width: "100px" }}
-                                  labelid={`size-label-${index}`}
-                                  value={variant.size}
+                                  labelId={`size-label-${index}`}
+                                  value={variant.sizeId}
                                   onChange={handleChange}
-                                  renderValue={(size) => size.value}
+                                  renderValue={(sizeId) =>
+                                    sizes.find((size) => size.id === sizeId).value
+                                  }
                                 >
                                   {sizes.map((size) => (
-                                    <MenuItem key={size.id} value={size}>
+                                    <MenuItem key={size.id} value={size.id}>
                                       {size.value}
                                     </MenuItem>
                                   ))}

@@ -39,7 +39,7 @@ export const addNewProduct = async (props) => {
 
 export const updateProduct = async (props) => {
   const { id, data } = props;
-  // console.log(props);
+  console.log("api", props);
   const res = await instance.put("/api/product/" + id, data);
   return res.data;
 };

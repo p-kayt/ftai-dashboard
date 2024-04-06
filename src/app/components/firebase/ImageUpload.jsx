@@ -10,7 +10,7 @@ const ImageUpload = ({ onUpload }) => {
   const handleUpload = async () => {
     if (!img) return;
     const imageName = img.name; // get the name of the image without extension
-    let imgRef = ref(imgDb, imageName); // use the image name as the file name
+    let imgRef = ref(imgDb, "ProductImg/" + imageName); // use the image name as the file name
     // Upload the image
     uploadBytes(imgRef, img).then(() => {
       getDownloadURL(imgRef).then((downloadURL) => {
