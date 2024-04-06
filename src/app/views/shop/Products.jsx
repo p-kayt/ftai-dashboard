@@ -9,10 +9,13 @@ import {
   MenuItem,
   Paper,
   Select,
-  TextField
+  TextField,
+  Link,
+  CircularProgress
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { imageWithUrl } from "api/firebaseConfig";
 import {
   addNewProduct,
   deleteProductById,
@@ -20,9 +23,12 @@ import {
   getAllCategories,
   getAllColors,
   getAllProducts,
-  getAllSizes
+  getAllSizes,
+  updateProduct
 } from "api/productApi";
+import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
+import { forEach } from "lodash";
 import React from "react";
 
 import { useEffect } from "react";
@@ -82,8 +88,20 @@ const Products = () => {
     }
   });
 
+  const updateMutation = useMutation({
+    mutationKey: ["updateProduct"],
+    mutationFn: (data) => updateProduct(data),
+    onSuccess: () => {
+      console.log("update success");
+    },
+    onError: (error) => {
+      console.log(error);
+    }
+  });
+
   const [open, setOpen] = useState(false);
   const [func, setFunc] = useState(null);
+  const [imagesFetched, setImagesFetched] = useState(true);
   const [product, setProduct] = useState({
     name: null,
     description: null,
@@ -103,6 +121,7 @@ const Products = () => {
     setProduct(editedProduct);
     setOpen(true);
     setFunc("edit");
+    setImagesFetched(false);
     // console.log("Edit: ", id);
     // console.log("product", editedProduct);
   };
@@ -135,22 +154,35 @@ const Products = () => {
 
   const handleAdd = (data) => {
     console.log("add", data);
-    // addMutation.mutate(
-    //   { data },
-    //   {
-    //     onSuccess: () => {
-    //       Swal.fire("Added!", "Your item has been added.", "success");
-    //     },
-    //     onError: (error) => {
-    //       Swal.fire("Error!", "An error occurred while adding the item.", "error");
-    //     }
-    //   }
-    // );
+    addMutation.mutate(
+      { data },
+      {
+        onSuccess: () => {
+          Swal.fire("Added!", "Your item has been added.", "success");
+        },
+        onError: (error) => {
+          Swal.fire("Error!", "An error occurred while adding the item.", "error");
+        }
+      }
+    );
   };
 
   const handleUpdate = (data) => {
-    console.log(data);
+    console.log("update", data);
+    updateMutation.mutate(
+      { data },
+      {
+        onSuccess: () => {
+          Swal.fire("Added!", "Your item has been updated.", "success");
+        },
+        onError: (error) => {
+          Swal.fire("Error!", "An error occurred while updating the item.", "error");
+        }
+      }
+    );
   };
+
+  const fireBaseImgUpload = () => {};
 
   const columns = [
     {
@@ -244,6 +276,7 @@ const Products = () => {
         <Button
           variant="contained"
           onClick={() => {
+            setProduct(null);
             setOpen(true);
             setFunc("create");
           }}
@@ -271,6 +304,8 @@ const Products = () => {
             open={open}
             setOpen={setOpen}
             type={func}
+            imagesFetched={imagesFetched}
+            setImagesFetched={setImagesFetched}
             initProduct={product}
             setProduct={setProduct}
             categories={cateQuery.data.data}
@@ -298,20 +333,24 @@ const Modal = ({
   colors,
   sizes,
   addCall,
-  updateCall
+  updateCall,
+  imagesFetched,
+  setImagesFetched
 }) => {
   const handleFormSubmit = (values) => {
     let newProduct = {
       name: values.name,
       description: values.description,
-      defaultImage: values.defaultImage,
-      tryOnImage: values.tryOnImage,
+      defaultImage: values.images[0].url,
+      tryOnImage: values.tryOnImage || "",
       canTryOn: values.canTryOn,
       edgeImage: values.edgeImage,
       category: values.category,
       brand: values.brand,
       // properties: [],
-      // images: [],
+      images: values.images.map((item) => {
+        return { url: item.url };
+      }),
       productVariants: values.productVariants
     };
 
@@ -325,32 +364,26 @@ const Modal = ({
       };
     }
     setProduct(newProduct);
+    // console.log("values", values);
     // console.log("new", newProduct);
     if (type === "create") {
       addCall(newProduct);
     } else {
-      updateCall(newProduct);
+      updateCall({ id: initProduct.id, data: newProduct });
     }
     setOpen(false);
   };
 
-  const initCate = categories[0];
-  const initSubCate = initCate.subCategories[0];
-
-  let initData = {
+  const createData = {
     name: null,
     description: null,
     defaultImage: null,
     tryOnImage: null,
     canTryOn: false,
     edgeImage: null,
-    category: initCate,
-    subCategories: initSubCate,
+    category: categories[0],
     brand: brands[0],
-    // color: colors[0],
-    // size: sizes[0],
-    // quantity: 1,
-    // price: 0,
+    images: [],
     productVariants: [
       {
         color: colors[0],
@@ -361,21 +394,41 @@ const Modal = ({
     ]
   };
 
+  const [initData, setInitData] = useState();
+
   if (type === "edit") {
-    initData = {
-      ...initData,
-      name: initProduct.name,
-      description: initProduct.description,
-      defaultImage: initProduct.defaultImage,
-      tryOnImage: initProduct.tryOnImage,
-      canTryOn: initProduct.canTryOn,
-      edgeImage: initProduct.edgeImage,
-      category: initProduct.category,
-      brand: initProduct.brand,
-      productVariants: initProduct.productVariants,
-      subCategories: initProduct.category ? initProduct.category.subCategories : initSubCate
-    };
+    if (!imagesFetched) {
+      let newImgs = [];
+      // Use Promise.all to wait for all promises to resolve
+      Promise.all(
+        // Map over the images array and call imageWithUrl for each image
+        initProduct.images.map((image) => imageWithUrl({ url: image.imageUrl }))
+      )
+        .then((newImages) => {
+          // newImages is an array of image objects
+          newImgs = [...newImages.flat()];
+
+          setInitData({
+            ...createData,
+            name: initProduct.name,
+            description: initProduct.description,
+            defaultImage: initProduct.defaultImage,
+            tryOnImage: initProduct.tryOnImage,
+            canTryOn: initProduct.canTryOn,
+            edgeImage: initProduct.edgeImage,
+            category: initProduct.category,
+            brand: initProduct.brand,
+            productVariants: initProduct.productVariants,
+            images: newImgs
+          });
+          setImagesFetched(true); // Set imagesFetched to true after images have been fetched
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
   }
+
   return (
     <div>
       <Dialog
@@ -409,116 +462,202 @@ const Modal = ({
             X
           </IconButton>
         </DialogTitle>
-        <Formik onSubmit={handleFormSubmit} initialValues={initData}>
-          {({ values, handleChange, handleSubmit }) => (
-            <form
-              style={{
-                display: "flex",
-                height: "100%",
-                padding: "10px 10px 20px 10px",
-                marginBottom: "10px",
-                flexDirection: "column",
-                justifyContent: "flex-start"
-              }}
-              onSubmit={handleSubmit}
-            >
-              <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px" }}>
-                <TextField
-                  style={{ width: "100%" }}
-                  name="name"
-                  label="Name"
-                  value={values?.name}
-                  onChange={handleChange}
-                />
-                <TextField
-                  style={{ width: "100%" }}
-                  inputProps={{ style: { height: "100px" } }}
-                  name="description"
-                  label="Description"
-                  multiline
-                  row={2}
-                  value={values?.description}
-                  onChange={handleChange}
-                />
-                <TextField
+        {imagesFetched ? (
+          <Formik
+            onSubmit={handleFormSubmit}
+            initialValues={type === "create" ? createData : initData}
+          >
+            {({ values, handleChange, handleSubmit, setFieldValue }) => (
+              <form
+                style={{
+                  display: "flex",
+                  height: "100%",
+                  padding: "10px 10px 20px 10px",
+                  marginBottom: "10px",
+                  flexDirection: "column",
+                  justifyContent: "flex-start"
+                }}
+                onSubmit={handleSubmit}
+              >
+                <div
+                  style={{ width: "100%", display: "flex", flexDirection: "column", gap: "10px" }}
+                >
+                  <TextField
+                    style={{ width: "100%" }}
+                    name="name"
+                    label="Name"
+                    value={values?.name}
+                    onChange={handleChange}
+                  />
+                  <TextField
+                    style={{ width: "100%" }}
+                    inputProps={{ style: { height: "100px" } }}
+                    name="description"
+                    label="Description"
+                    multiline
+                    row={2}
+                    value={values?.description}
+                    onChange={handleChange}
+                  />
+                  {/* <TextField
                   style={{ width: "100%" }}
                   name="defaultImage"
                   label="Image"
                   value={values?.defaultImage}
                   onChange={handleChange}
-                />
+                /> */}
 
-                {/* <div style={{ display: "flex", flexDirection: "row", width: "100%" }}> */}
-                <FormControlLabel
-                  style={{ width: "150px", height: "100%", margin: "0 10px" }}
-                  control={
-                    <Checkbox name="canTryOn" checked={values?.canTryOn} onChange={handleChange} />
-                  }
-                  label="Can Try On"
-                />
-                {values.canTryOn && (
-                  <div
-                    style={{ display: "flex", width: "100%", flexDirection: "row", gap: "10px" }}
-                  >
-                    <TextField
-                      style={{ flex: "1" }}
-                      name="edgeImage"
-                      label="Edge Image"
-                      value={values?.edgeImage}
-                      onChange={handleChange}
-                    />
-                    <TextField
-                      style={{ flex: "1" }}
-                      name="tryOnImage"
-                      label="Try On Image"
-                      value={values?.tryOnImage}
-                      onChange={handleChange}
-                    />
-                  </div>
-                )}
-                {/* </div> */}
-                <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
                   <div>
-                    <InputLabel id="brand-label">Brand</InputLabel>
-                    <Select
-                      style={{ width: "150px" }}
-                      name="brand"
-                      labelId="brand-label"
-                      value={values.brand}
-                      onChange={handleChange}
-                      renderValue={(brand) => brand.name}
-                    >
-                      {brands.map((brands) => (
-                        <MenuItem key={brands.id} value={brands}>
-                          {brands.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
+                    <InputLabel id="images-label">Images</InputLabel>
+                    <ImageUpload
+                      onUpload={(imgData) => {
+                        setFieldValue("images", [...values.images, imgData]);
+                      }}
+                    />
+                    {/* Display a list of uploaded images */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                      {values.images &&
+                        values.images.map((imgData, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "10px",
+                              justifyContent: "flex-start"
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: "30%",
+                                flexDirection: "column",
+                                alignItems: "center"
+                              }}
+                            >
+                              <TextField
+                                style={{ width: "100%" }}
+                                label="Name"
+                                defaultValue={imgData.name}
+                                InputProps={{
+                                  readOnly: true
+                                }}
+                                focused={false}
+                              />
+                            </div>
+                            <div
+                              style={{
+                                width: "55%",
+                                display: "flex",
+                                flexDirection: "row",
+                                alignContent: "center",
+                                gap: "10px"
+                              }}
+                            >
+                              <TextField
+                                label="Image URL"
+                                style={{ width: "80%" }}
+                                defaultValue={imgData.url}
+                                InputProps={{
+                                  readOnly: true
+                                }}
+                                focused={false}
+                              />
+                              <Button
+                                style={{ width: "100px", alignItems: "center" }}
+                                href={imgData.url}
+                                target="_blank"
+                              >
+                                Open link
+                              </Button>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                // Remove the image from the images array
+                                const newImages = values.images.filter((_, i) => i !== index);
+                                setFieldValue("images", newImages);
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ))}
+                    </div>
                   </div>
+                  {/* <div style={{ display: "flex", flexDirection: "row", width: "100%" }}> */}
+                  <FormControlLabel
+                    style={{ width: "150px", height: "100%", margin: "0 10px" }}
+                    control={
+                      <Checkbox
+                        name="canTryOn"
+                        checked={values?.canTryOn}
+                        onChange={handleChange}
+                      />
+                    }
+                    label="Can Try On"
+                  />
+                  {values.canTryOn && (
+                    <div
+                      style={{ display: "flex", width: "100%", flexDirection: "row", gap: "10px" }}
+                    >
+                      <TextField
+                        style={{ flex: "1" }}
+                        name="edgeImage"
+                        label="Edge Image"
+                        value={values?.edgeImage}
+                        onChange={handleChange}
+                      />
+                      <TextField
+                        style={{ flex: "1" }}
+                        name="tryOnImage"
+                        label="Try On Image"
+                        value={values?.tryOnImage}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  )}
+                  {/* </div> */}
                   <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
                     <div>
-                      <InputLabel id="cate-label">Category</InputLabel>
+                      <InputLabel id="brand-label">Brand</InputLabel>
                       <Select
-                        name="category"
-                        labelId="cate-label"
-                        value={values.category}
+                        style={{ width: "150px" }}
+                        name="brand"
+                        labelid="brand-label"
+                        value={values.brand}
                         onChange={handleChange}
-                        renderValue={(category) => category.name}
+                        renderValue={(brand) => brand.name}
                       >
-                        {categories.map((category) => (
-                          <MenuItem key={category.id} value={category}>
-                            {category.name}
+                        {brands.map((brands) => (
+                          <MenuItem key={brands.id} value={brands}>
+                            {brands.name}
                           </MenuItem>
                         ))}
                       </Select>
                     </div>
-                    <div>
-                      {values.category.subCategories.length !== 0 && (
+                    <div style={{ display: "flex", flexDirection: "row", gap: "10px" }}>
+                      <div>
+                        <InputLabel id="cate-label">Category</InputLabel>
+                        <Select
+                          name="category"
+                          labelid="cate-label"
+                          value={values.category}
+                          onChange={handleChange}
+                          renderValue={(category) => category.name}
+                        >
+                          {categories.map((category) => (
+                            <MenuItem key={category.id} value={category}>
+                              {category.name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </div>
+                      {/* <div>
+                      {values.category?.subCategories?.length !== 0 && (
                         <>
                           <InputLabel id="subCate-label">Sub Category</InputLabel>
                           <Select
                             name="subCategories"
-                            labelId="subC ate-label"
+                            labelid="subC ate-label"
                             value={values.subCategories}
                             onChange={handleChange}
                             renderValue={(subCategories) => subCategories.name}
@@ -531,136 +670,148 @@ const Modal = ({
                           </Select>
                         </>
                       )}
+                    </div> */}
                     </div>
                   </div>
-                </div>
-                <div>
-                  <InputLabel id="variant-label">Variant</InputLabel>
-                  <FieldArray name="productVariants">
-                    {({ push, remove }) => (
-                      <div>
-                        {values.productVariants.map((variant, index) => (
-                          <div
-                            key={index}
-                            style={{
-                              display: "flex",
-                              flexDirection: "row",
-                              gap: "10px",
-                              margin: "10px 0"
-                            }}
-                          >
-                            <InputLabel id={`variant-label-${index}`}>
-                              Variant {index + 1}
-                            </InputLabel>
-                            <div>
-                              <InputLabel id={`color-label-${index}`}>Color</InputLabel>
-                              <Select
-                                name={`productVariants[${index}].color`}
-                                style={{ width: "120px" }}
-                                labelId={`color-label-${index}`}
-                                value={variant.color}
-                                onChange={handleChange}
-                                renderValue={(color) => color.colorCode}
-                              >
-                                {colors.map((color) => (
-                                  <MenuItem key={color.id} value={color}>
-                                    <div
-                                      style={{
-                                        display: "flex",
-                                        width: "100%",
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        alignItems: "center",
-                                        textAlign: "center"
-                                      }}
-                                    >
-                                      {color.colorCode}
+                  <div>
+                    <InputLabel id="variant-label">Variant</InputLabel>
+                    <FieldArray name="productVariants">
+                      {({ push, remove }) => (
+                        <div>
+                          {values.productVariants.map((variant, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "10px",
+                                margin: "10px 0"
+                              }}
+                            >
+                              <InputLabel id={`variant-label-${index}`}>
+                                Variant {index + 1}
+                              </InputLabel>
+                              <div>
+                                <InputLabel id={`color-label-${index}`}>Color</InputLabel>
+                                <Select
+                                  name={`productVariants[${index}].color`}
+                                  style={{ width: "120px" }}
+                                  labelid={`color-label-${index}`}
+                                  value={variant.color}
+                                  onChange={handleChange}
+                                  renderValue={(color) => color.colorCode}
+                                >
+                                  {colors.map((color) => (
+                                    <MenuItem key={color.id} value={color}>
                                       <div
                                         style={{
-                                          height: "30px",
-                                          width: "30px",
-                                          margin: "0 10px",
-                                          backgroundColor: color.colorCode
+                                          display: "flex",
+                                          width: "100%",
+                                          flexDirection: "row",
+                                          justifyContent: "space-between",
+                                          alignItems: "center",
+                                          textAlign: "center"
                                         }}
-                                      ></div>
-                                    </div>
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </div>
-                            <div>
-                              <InputLabel id={`size-label-${index}`}>Size</InputLabel>
-                              <Select
-                                name={`productVariants[${index}].size`}
-                                style={{ width: "100px" }}
-                                labelId={`size-label-${index}`}
-                                value={variant.size}
-                                onChange={handleChange}
-                                renderValue={(size) => size.value}
-                              >
-                                {sizes.map((size) => (
-                                  <MenuItem key={size.id} value={size}>
-                                    {size.value}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </div>
-                            <div>
-                              <InputLabel id={`quantity-label-${index}`}>Quantity</InputLabel>
-                              <TextField
-                                name={`productVariants[${index}].quantity`}
-                                labelId={`quantity-label-${index}`}
-                                value={variant.quantity}
-                                onChange={handleChange}
-                                type="number"
-                                inputProps={{ min: "1" }}
-                              />
-                            </div>
+                                      >
+                                        {color.colorCode}
+                                        <div
+                                          style={{
+                                            height: "30px",
+                                            width: "30px",
+                                            margin: "0 10px",
+                                            backgroundColor: color.colorCode
+                                          }}
+                                        ></div>
+                                      </div>
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </div>
+                              <div>
+                                <InputLabel id={`size-label-${index}`}>Size</InputLabel>
+                                <Select
+                                  name={`productVariants[${index}].size`}
+                                  style={{ width: "100px" }}
+                                  labelid={`size-label-${index}`}
+                                  value={variant.size}
+                                  onChange={handleChange}
+                                  renderValue={(size) => size.value}
+                                >
+                                  {sizes.map((size) => (
+                                    <MenuItem key={size.id} value={size}>
+                                      {size.value}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
+                              </div>
+                              <div>
+                                <InputLabel id={`quantity-label-${index}`}>Quantity</InputLabel>
+                                <TextField
+                                  name={`productVariants[${index}].quantity`}
+                                  labelid={`quantity-label-${index}`}
+                                  value={variant.quantity}
+                                  onChange={handleChange}
+                                  type="number"
+                                  inputProps={{ min: "1" }}
+                                />
+                              </div>
 
-                            <div>
-                              <InputLabel id={`price-label-${index}`}>Price (VNĐ)</InputLabel>
-                              <TextField
-                                name={`productVariants[${index}].price`}
-                                labelId={`price-label-${index}`}
-                                value={variant.price}
-                                onChange={handleChange}
-                                type="number"
-                                inputProps={{ min: "0" }}
-                              />
-                            </div>
+                              <div>
+                                <InputLabel id={`price-label-${index}`}>Price (VNĐ)</InputLabel>
+                                <TextField
+                                  name={`productVariants[${index}].price`}
+                                  labelid={`price-label-${index}`}
+                                  value={variant.price}
+                                  onChange={handleChange}
+                                  type="number"
+                                  inputProps={{ min: "0" }}
+                                />
+                              </div>
 
-                            <Button onClick={() => remove(index)}>Remove</Button>
-                          </div>
-                        ))}
-                        <Button
-                          onClick={() => push({ color: "", size: "", quantity: 1, price: 0 })}
-                        >
-                          Add Variant
-                        </Button>
-                      </div>
-                    )}
-                  </FieldArray>
+                              <Button onClick={() => remove(index)}>Remove</Button>
+                            </div>
+                          ))}
+                          <Button
+                            onClick={() => push({ color: "", size: "", quantity: 1, price: 0 })}
+                          >
+                            Add Variant
+                          </Button>
+                        </div>
+                      )}
+                    </FieldArray>
+                  </div>
                 </div>
-              </div>
 
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  justifyContent: "flex-end"
-                }}
-              >
-                <Button
-                  style={{ width: "150px", margin: "0px 20px" }}
-                  variant="contained"
-                  type="submit"
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end"
+                  }}
                 >
-                  Submit
-                </Button>
-              </div>
-            </form>
-          )}
-        </Formik>
+                  <Button
+                    style={{ width: "150px", margin: "0px 20px" }}
+                    variant="contained"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </form>
+            )}
+          </Formik>
+        ) : (
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignContent: "center"
+            }}
+          >
+            <CircularProgress />
+          </div>
+        )}
       </Dialog>
     </div>
   );
