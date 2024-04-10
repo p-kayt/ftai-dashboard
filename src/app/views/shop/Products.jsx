@@ -15,16 +15,8 @@ import {
 import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { imageWithUrl } from "api/firebaseConfig";
-import {
-  addNewProduct,
-  deleteProductById,
-  getAllBrands,
-  getAllCategories,
-  getAllColors,
-  getAllProducts,
-  getAllSizes,
-  updateProduct
-} from "api/productApi";
+import { getAllBrands, getAllCategories, getAllColors, getAllSizes } from "api/othersApi";
+import { addNewProduct, deleteProductById, getAllProducts, updateProduct } from "api/productApi";
 import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
 import React from "react";
@@ -203,26 +195,26 @@ const Products = () => {
     {
       field: "name",
       headerName: "Name",
-      width: 230
+      flex: 1
     },
     {
       field: "description",
       headerName: "Description",
       sortable: false,
-      width: 400
+      flex: 2
     },
     {
       field: "totalSold",
       headerName: "Total sold",
       // sortable: false,
-      width: 150
+      width: 100
     },
     {
       field: "brand",
       headerName: "Brand",
       // description: "This column has a value getter and is not sortable.",
       // sortable: false,
-      width: 120,
+      width: 100,
       valueGetter: (value) => value.name
     },
     {
@@ -230,22 +222,22 @@ const Products = () => {
       headerName: "Category",
       // description: "This column has a value getter and is not sortable.",
       // sortable: false,
-      width: 120,
+      width: 100,
       valueGetter: (value) => value.name
     },
     {
       field: "defaultImage",
       headerName: "Image",
       sortable: false,
-      width: 250
+      flex: 2
     },
 
     {
       field: "options",
       headerName: "Options",
-      headerAlign: "right",
+      headerAlign: "center",
       sortable: false,
-      width: 180,
+      width: 200,
       renderCell: (params) => (
         <strong>
           <div style={{ margin: "0 auto" }}>
@@ -284,6 +276,7 @@ const Products = () => {
     <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
       <div style={{ margin: "10px 0px" }}>
         <Button
+          style={{ marginBottom: "10px" }}
           variant="contained"
           onClick={() => {
             setProduct(null);
