@@ -1,10 +1,13 @@
 import { Button } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { useQuery } from "@tanstack/react-query";
-import { getAllCategories } from "api/productApi";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deleteCategoryById, getAllCategories } from "api/othersApi";
+import Swal from "sweetalert2";
 import React from "react";
 
-const Categories = () => {
+const Categories = (props) => {
+  const { setModalOpen, setInit, setActionType } = props;
+  const queryClient = useQueryClient();
   const {
     data: categories,
     isLoading,
@@ -14,16 +17,49 @@ const Categories = () => {
     queryFn: getAllCategories
   });
 
-  console.log(categories);
-
+  // if (isSuccess) {
+  //   console.log(categories.data);
+  // }
+  const cateDelete = useMutation({
+    mutationKey: ["deleteCateById"],
+    mutationFn: (id) => deleteCategoryById({ id }),
+    onSuccess: () => {
+      queryClient.invalidateQueries("categories");
+    },
+    onError: (error) => {}
+  });
   const handleEdit = (id) => {
-    // handle edit operation here
-    console.log("Edit: ", id);
+    const data = categories.data.find((item) => item.id === id);
+    setInit(data);
+    setActionType("edit");
+    setModalOpen(true);
   };
 
   const handleDelete = (id) => {
-    // handle delete operation here
-    console.log("Delete: ", id);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        cateDelete.mutate(id, {
+          onSuccess: () => {
+            // console.log("success");
+            queryClient.invalidateQueries("categories");
+            Swal.fire("Deleted!", "Your file has been deleted.", "success");
+          },
+          onError: (error) => {
+            // console.log(error);
+            Swal.fire("Error!", "An error occurred while deleting the item.", "error");
+          }
+        });
+        // console.log("Delete: ", id);
+      }
+    });
   };
 
   const columns = [
@@ -35,13 +71,14 @@ const Categories = () => {
     {
       field: "name",
       headerName: "Name",
-      width: 230
+      flex: 1
     },
     {
       field: "options",
       headerName: "Options",
+      headerAlign: "center",
       sortable: false,
-      width: 300,
+      width: 200,
       renderCell: (params) => (
         <strong>
           <button
@@ -75,7 +112,17 @@ const Categories = () => {
   ];
 
   return (
-    <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "50px" }}>
+    <div style={{ margin: "10px 20px" }}>
+      <Button
+        style={{ marginBottom: "10px" }}
+        variant="contained"
+        onClick={() => {
+          setModalOpen(true);
+          setActionType("create");
+        }}
+      >
+        Add new Category
+      </Button>
       {isSuccess && (
         <DataGrid
           rows={categories.data}
@@ -86,7 +133,7 @@ const Categories = () => {
             }
           }}
           pageSizeOptions={[5, 10]}
-
+          disableColumnResize
           // checkboxSelection
         />
       )}
