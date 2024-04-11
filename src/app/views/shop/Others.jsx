@@ -13,7 +13,6 @@ import {
   TextField,
   CircularProgress
 } from "@mui/material";
-import { DatePicker } from "@mui/lab";
 import Categories from "./others/Categories";
 import Colors from "./others/Colors";
 import Sizes from "./others/Sizes";
@@ -25,22 +24,28 @@ import {
   addBrand,
   addCategory,
   addColor,
+  addPromotion,
   addSize,
   deleteCategoryById,
   updateBrand,
   updateCategory,
   updateColor,
+  updatePromotion,
   updateSize
 } from "api/othersApi";
 import Swal from "sweetalert2";
 import Promotion from "./others/Promotion";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs from "dayjs";
 const Others = () => {
   const queryClient = useQueryClient();
 
   //promotion
   const promoAdd = useMutation({
     mutationKey: ["promoAdd"],
-    mutationFn: (data) => addSize(data),
+    mutationFn: (data) => addPromotion(data),
     onSuccess: () => {
       queryClient.invalidateQueries("promos");
     },
@@ -48,7 +53,7 @@ const Others = () => {
   });
   const promoUpdate = useMutation({
     mutationKey: ["promoUpdate"],
-    mutationFn: (data) => updateSize(data),
+    mutationFn: (data) => updatePromotion(data),
     onSuccess: () => {
       queryClient.invalidateQueries("promos");
     },
@@ -300,6 +305,7 @@ const Others = () => {
   };
 
   const handleAddPromos = (data) => {
+    console.log("data", data);
     Swal.fire({
       title: "Are you sure?",
       text: "You are about to add an item.",
@@ -782,6 +788,7 @@ const ColorModal = ({ open, setOpen, type, initData, addCall, updateCall }) => {
 
 const SizeModal = ({ open, setOpen, type, initData, addCall, updateCall }) => {
   const handleFormSubmit = (values) => {
+    console.log("aaa");
     if (type === "create") {
       addCall(values);
     }
@@ -899,24 +906,36 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
 
   const validate = Yup.object().shape({
     code: Yup.string().required("Required"),
-    percent: Yup.string().required("Required"),
-    maxValue: Yup.string().required("Required"),
-    description: Yup.string().required("Required"),
-    startDate: Yup.string().required("Required"),
-    exprireDate: Yup.string().required("Required")
+    percent: Yup.number().required("Required").max(100, "Value must be less than or equal to 100"),
+    maxValue: Yup.number().required("Required"),
+    minTotalValue: Yup.number().required("Required"),
+    startDate: Yup.date().required("Start Date is required").nullable(),
+    exprireDate: Yup.date()
+      .required("Expire Date is required")
+      .nullable()
+      .when(
+        "startDate",
+        (startDate, yup) =>
+          startDate && yup.min(startDate, "Expire Date must be later than Start Date")
+      )
   });
 
   const createData = {
     code: undefined,
     percent: undefined,
     maxValue: undefined,
+    minTotalValue: undefined,
     description: undefined,
-    tartDate: new Date(),
-    expireDate: new Date()
+    startDate: dayjs(),
+    exprireDate: dayjs()
   };
-
+  let newInitdata = {};
   if (type === "edit") {
-    console.log("edit=", initData);
+    const newStartDate = dayjs(initData.startDate);
+    const newExprireDate = dayjs(initData.exprireDate);
+
+    newInitdata = { ...initData, startDate: newStartDate, exprireDate: newExprireDate };
+    console.log("edit=", newInitdata);
   }
 
   function generateRandomString() {
@@ -931,83 +950,178 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
 
   return (
     <div>
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        PaperComponent={({ children }) => (
-          <Paper
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Dialog
+          open={open}
+          onClose={() => setOpen(false)}
+          PaperComponent={({ children }) => (
+            <Paper
+              style={{
+                width: "45%",
+                height: "auto",
+                minHeight: "200px",
+                maxHeight: "500px",
+                overflowY: "auto"
+              }}
+            >
+              {children}
+            </Paper>
+          )}
+        >
+          <DialogTitle
             style={{
-              width: "70%",
-              height: "auto",
-              minHeight: "200px",
-              maxHeight: "500px",
-              overflowY: "auto"
+              display: "flex",
+              width: "100%",
+              justifyContent: "space-between",
+              textAlign: "center",
+              alignContent: "center"
             }}
           >
-            {children}
-          </Paper>
-        )}
-      >
-        <DialogTitle
-          style={{
-            display: "flex",
-            width: "100%",
-            justifyContent: "space-between",
-            textAlign: "center",
-            alignContent: "center"
-          }}
-        >
-          {type === "create" ? <span>New Promos</span> : <span>Update Promos</span>}
-          <IconButton edge="end" color="inherit" onClick={() => setOpen(false)} aria-label="close">
-            X
-          </IconButton>
-        </DialogTitle>
-        <Formik
-          onSubmit={handleFormSubmit}
-          initialValues={type === "create" ? createData : initData}
-          validationSchema={validate}
-        >
-          {({ values, handleChange, handleSubmit, setFieldValue, errors, touched }) => (
-            <form
-              style={{
-                display: "flex",
-                height: "100%",
-                padding: "10px 10px 20px 10px",
-                marginBottom: "10px",
-                flexDirection: "column",
-                justifyContent: "flex-start",
-                gap: "10px"
-              }}
-              onSubmit={handleSubmit}
+            {type === "create" ? <span>New Promos</span> : <span>Update Promos</span>}
+            <IconButton
+              edge="end"
+              color="inherit"
+              onClick={() => setOpen(false)}
+              aria-label="close"
             >
-              <TextField
-                style={{ width: "100%" }}
-                name="code"
-                label="Code"
-                value={values.code}
-                onChange={handleChange}
-                error={touched.code && !!errors.code}
-                helperText={touched.code && errors.code}
-              />
-              <div
+              X
+            </IconButton>
+          </DialogTitle>
+          <Formik
+            onSubmit={handleFormSubmit}
+            initialValues={type === "create" ? createData : newInitdata}
+            validationSchema={validate}
+          >
+            {({ values, handleChange, handleSubmit, setFieldValue, errors, touched }) => (
+              <form
                 style={{
-                  width: "100%",
                   display: "flex",
-                  justifyContent: "flex-end"
+                  height: "100%",
+                  padding: "10px 10px 20px 10px",
+                  marginBottom: "10px",
+                  flexDirection: "column",
+                  justifyContent: "flex-start",
+                  gap: "10px"
                 }}
+                onSubmit={handleSubmit}
               >
-                <Button
-                  style={{ width: "150px", margin: "0px 20px" }}
-                  variant="contained"
-                  type="submit"
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <TextField
+                    style={{ width: "85%" }}
+                    name="code"
+                    label="Code"
+                    value={values.code}
+                    onChange={handleChange}
+                    error={touched.code && !!errors.code}
+                    helperText={touched.code && errors.code}
+                  />
+                  <Button
+                    style={{ width: "15%", marginLeft: "10px" }}
+                    variant="contained"
+                    onClick={() => setFieldValue("code", generateRandomString())}
+                  >
+                    Generate
+                  </Button>
+                </div>
+                <TextField
+                  type="number"
+                  style={{ flex: 1 }}
+                  name="percent"
+                  label="Percent"
+                  value={values.percent}
+                  onChange={handleChange}
+                  error={touched.percent && !!errors.percent}
+                  helperText={touched.percent && errors.percent}
+                  inputProps={{ min: 0, max: 100 }}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "10px",
+                    flex: 1
+                  }}
                 >
-                  Submit
-                </Button>
-              </div>
-            </form>
-          )}
-        </Formik>
-      </Dialog>
+                  <TextField
+                    type="number"
+                    style={{ flex: 1 }}
+                    name="minTotalValue"
+                    label="Min Total Value"
+                    value={values.minTotalValue}
+                    onChange={handleChange}
+                    error={touched.minTotalValue && !!errors.minTotalValue}
+                    helperText={touched.minTotalValue && errors.minTotalValue}
+                    inputProps={{ min: 0 }}
+                  />
+                  <TextField
+                    type="number"
+                    style={{ flex: 1 }}
+                    name="maxValue"
+                    label="Max Value"
+                    value={values.maxValue}
+                    onChange={handleChange}
+                    error={touched.maxValue && !!errors.maxValue}
+                    helperText={touched.maxValue && errors.maxValue}
+                    inputProps={{ min: 0 }}
+                  />
+                </div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "10px",
+                    flex: 1
+                  }}
+                >
+                  <DatePicker
+                    label="Start Date"
+                    value={values.startDate}
+                    onChange={(newValue) => {
+                      setFieldValue("startDate", newValue);
+                    }}
+                    renderInput={(params) => <TextField fullWidth {...params} />}
+                  />
+                  <DatePicker
+                    label="Expire Date"
+                    value={values.exprireDate}
+                    onChange={(newValue) => {
+                      setFieldValue("exprireDate", newValue);
+                    }}
+                    renderInput={(params) => <TextField fullWidth {...params} />}
+                  />
+                </div>
+                <TextField
+                  style={{ width: "100%" }}
+                  inputProps={{ style: { height: "100px" } }}
+                  name="description"
+                  label="Description"
+                  multiline
+                  row={2}
+                  value={values.description}
+                  onChange={handleChange}
+                  error={touched.description && !!errors.description}
+                  helperText={touched.description && errors.description}
+                />
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end"
+                  }}
+                >
+                  <Button
+                    style={{ width: "150px", margin: "0px 20px" }}
+                    variant="contained"
+                    type="submit"
+                  >
+                    Submit
+                  </Button>
+                </div>
+              </form>
+            )}
+          </Formik>
+        </Dialog>
+      </LocalizationProvider>
     </div>
   );
 };
