@@ -1,47 +1,71 @@
+import { authRoles } from "./auth/authRoles";
+
 export const navigations = [
   {
     name: "Dashboard",
     path: "/dashboard/default",
-    icon: "dashboard"
+    icon: "dashboard",
+    role: authRoles.staff
   },
   {
     label: "Store",
-    type: "label"
+    type: "label",
+    role: authRoles.manager
   },
   {
     name: "Products",
     icon: "inventory",
-    path: "/shop/products"
+    path: "/shop/products",
+    role: authRoles.manager
   },
 
   {
     name: "Models",
     icon: "faceretouchingnatural",
-    path: "/shop/models"
+    path: "/shop/models",
+    role: authRoles.manager
   },
+
   {
     name: "Others",
     icon: "inventory",
-    path: "/shop/others"
+    path: "/shop/others",
+    role: authRoles.manager
   },
   {
     label: "Users",
-    type: "label"
+    type: "label",
+    role: authRoles.manager
   },
   {
     name: "Users",
     icon: "people",
-    path: "/users/user"
+    path: "/users/user",
+    role: authRoles.manager
+  },
+  {
+    label: "Control Order",
+    type: "label",
+    role: authRoles.admin
+  },
+  {
+    name: "Orders",
+    icon: "listalt",
+    path: "/shop/orders",
+    role: authRoles.manager
   },
   {
     label: "Simulation",
-    type: "label"
+    type: "label",
+    role: authRoles.admin
   },
   {
     name: "Shipping",
     icon: "car",
-    path: "/"
+    path: "/",
+    role: authRoles.manager
   }
+
   // {
   //   label: "PAGES",
   //   type: "label"

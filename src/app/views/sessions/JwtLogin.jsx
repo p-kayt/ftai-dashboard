@@ -47,15 +47,15 @@ const StyledRoot = styled("div")(() => ({
 
 // initial login credentials
 const initialValues = {
-  email: "jason@ui-lib.com",
-  password: "dummyPass",
-  remember: true
+  email: "",
+  password: "",
+  remember: false
 };
 
 // form field validation schema
 const validationSchema = Yup.object().shape({
   password: Yup.string()
-    .min(6, "Password must be 6 character length")
+    .min(4, "Password must be 4 character length")
     .required("Password is required!"),
   email: Yup.string().email("Invalid Email address").required("Email is required!")
 });
@@ -156,11 +156,11 @@ export default function JwtLogin() {
 
                     <Paragraph>
                       Don't have an account?
-                      <NavLink
+                      {/* <NavLink
                         to="/session/signup"
                         style={{ color: theme.palette.primary.main, marginLeft: 5 }}>
                         Register
-                      </NavLink>
+                      </NavLink> */}
                     </Paragraph>
                   </form>
                 )}

@@ -5,6 +5,7 @@ import { Box, ButtonBase, Icon, styled } from "@mui/material";
 import useSettings from "app/hooks/useSettings";
 import { Paragraph, Span } from "../Typography";
 import MatxVerticalNavExpansionPanel from "./MatxVerticalNavExpansionPanel";
+import useAuth from "app/hooks/useAuth";
 
 // STYLED COMPONENTS
 const ListLabel = styled(Paragraph)(({ theme, mode }) => ({
@@ -78,9 +79,19 @@ const BadgeValue = styled("div")(() => ({
 export default function MatxVerticalNav({ items }) {
   const { settings } = useSettings();
   const { mode } = settings.layout1Settings.leftSidebar;
+  const { user } = useAuth()
+  const { roleId } = user
 
   const renderLevels = (data) => {
     return data.map((item, index) => {
+      if (!user) {
+        return null;
+      }
+
+      if (user && item.role && !item.role.includes(roleId)) {
+        return null;
+      }
+
       if (item.type === "label")
         return (
           <ListLabel key={index} mode={mode} className="sidenavHoverShow">

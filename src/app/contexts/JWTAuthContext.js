@@ -8,7 +8,18 @@ const initialState = {
   isInitialized: false,
   isAuthenticated: false
 };
+function decodeJwt(token) {
+  const parts = token.split(".");
+  const header = JSON.parse(atob(parts[0]));
+  const payload = JSON.parse(atob(parts[1]));
+  const signature = parts[2];
 
+  return {
+    header,
+    payload,
+    signature
+  };
+}
 const reducer = (state, action) => {
   switch (action.type) {
     case "INIT": {
@@ -24,12 +35,6 @@ const reducer = (state, action) => {
       return { ...state, isAuthenticated: false, user: null };
     }
 
-    case "REGISTER": {
-      const { user } = action.payload;
-
-      return { ...state, isAuthenticated: true, user };
-    }
-
     default:
       return state;
   }
@@ -39,25 +44,26 @@ const AuthContext = createContext({
   ...initialState,
   method: "JWT",
   login: () => {},
-  logout: () => {},
-  register: () => {}
+  logout: () => {}
 });
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const login = async (email, password) => {
-    const response = await axios.post("/api/auth/login", { email, password });
-    const { user } = response.data;
+    const response = await axios.post("https://ftai-api.monoinfinity.net/api/auth/login", {
+      email,
+      password
+    });
+    const token = response.data.data.accessToken;
+    const decoded = decodeJwt(token);
+    const userID = decoded.payload.UserId;
+    const secondRes = await axios.get(
+      `https://ftai-api.monoinfinity.net/api/user/profile/${userID}`
+    );
+    const user = secondRes.data.data;
 
     dispatch({ type: "LOGIN", payload: { user } });
-  };
-
-  const register = async (email, username, password) => {
-    const response = await axios.post("/api/auth/register", { email, username, password });
-    const { user } = response.data;
-
-    dispatch({ type: "REGISTER", payload: { user } });
   };
 
   const logout = () => {
@@ -80,7 +86,7 @@ export const AuthProvider = ({ children }) => {
   if (!state.isInitialized) return <MatxLoading />;
 
   return (
-    <AuthContext.Provider value={{ ...state, method: "JWT", login, logout, register }}>
+    <AuthContext.Provider value={{ ...state, method: "JWT", login, logout }}>
       {children}
     </AuthContext.Provider>
   );
