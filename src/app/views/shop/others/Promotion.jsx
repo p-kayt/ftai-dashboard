@@ -66,7 +66,7 @@ const Promotion = (props) => {
 
   const columns = [
     { field: "id", headerName: "ID", width: 50 },
-    { field: "code", headerName: "Code", flex: 1, sortable: false },
+    { field: "code", headerName: "Code", flex: 1.2, sortable: false },
     {
       field: "percent",
       headerName: "Percent (%)",
