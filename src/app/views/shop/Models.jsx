@@ -1,24 +1,23 @@
 import { addModel, deleteModelById, getAllModels, updateModel } from "api/modelsApi";
 
-import { DataGrid } from "@mui/x-data-grid";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Swal from "sweetalert2";
-import React from "react";
-import { useState } from "react";
 import {
   Button,
   Dialog,
   DialogTitle,
-  IconButton,
-  Paper,
-  TextField,
   FormControl,
+  IconButton,
   InputLabel,
+  MenuItem,
+  Paper,
   Select,
-  MenuItem
+  TextField
 } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Formik } from "formik";
+import { useState } from "react";
+import Swal from "sweetalert2";
 import * as Yup from "yup";
-import { ErrorMessage, Field, Formik } from "formik";
 const Models = () => {
   const queryClient = useQueryClient();
   const [initValue, setInitValue] = useState();
@@ -39,7 +38,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const modelUpdate = useMutation({
@@ -48,7 +47,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const modelDelete = useMutation({
@@ -57,7 +56,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -224,7 +223,7 @@ const Models = () => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
       <MyModal
