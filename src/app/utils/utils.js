@@ -1,4 +1,5 @@
 import { differenceInSeconds } from "date-fns";
+import moment from "moment";
 
 export const convertHexToRGB = (hex) => {
   // check if it's a rgba
@@ -105,3 +106,14 @@ export function getTimeDifference(date) {
   else if (difference < 86400 * 30 * 12) return `${Math.floor(difference / 86400 / 30)} mon`;
   else return `${(difference / 86400 / 30 / 12).toFixed(1)} y`;
 }
+
+export const transNumberFormatter = (number) => {
+  const formattedNumber = number?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  return formattedNumber;
+};
+
+export const dateConvert = (date) => {
+  const originalDateTime = moment(date);
+  const formattedDateTime = originalDateTime.format("DD-MM-YYYY hh:mm");
+  return formattedDateTime;
+};

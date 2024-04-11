@@ -1,44 +1,37 @@
-import React, { useState } from "react";
 import {
   Button,
-  Checkbox,
   Dialog,
   DialogTitle,
-  FormControlLabel,
   IconButton,
-  InputLabel,
-  MenuItem,
   Paper,
-  Select,
-  TextField,
-  CircularProgress
+  TextField
 } from "@mui/material";
-import Categories from "./others/Categories";
-import Colors from "./others/Colors";
-import Sizes from "./others/Sizes";
-import { ErrorMessage, Field, Formik } from "formik";
-import Brand from "./others/Brand";
-import * as Yup from "yup";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   addBrand,
   addCategory,
   addColor,
   addPromotion,
   addSize,
-  deleteCategoryById,
   updateBrand,
   updateCategory,
   updateColor,
   updatePromotion,
   updateSize
 } from "api/othersApi";
-import Swal from "sweetalert2";
-import Promotion from "./others/Promotion";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import dayjs from "dayjs";
+import { Formik } from "formik";
+import { useState } from "react";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
+import Brand from "./others/Brand";
+import Categories from "./others/Categories";
+import Colors from "./others/Colors";
+import Promotion from "./others/Promotion";
+import Sizes from "./others/Sizes";
 const Others = () => {
   const queryClient = useQueryClient();
 
@@ -49,7 +42,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("promos");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const promoUpdate = useMutation({
     mutationKey: ["promoUpdate"],
@@ -57,7 +50,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("promos");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   //category
@@ -67,7 +60,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const cateUpdate = useMutation({
     mutationKey: ["cateUpdate"],
@@ -75,7 +68,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   //brand
   const brandAdd = useMutation({
@@ -84,7 +77,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("brands");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const brandUpdate = useMutation({
     mutationKey: ["brandUpdate"],
@@ -92,7 +85,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("brands");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   //size
@@ -102,7 +95,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const sizeUpdate = useMutation({
     mutationKey: ["sizeUpdate"],
@@ -110,7 +103,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   //color
@@ -120,7 +113,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("colors");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const colorUpdate = useMutation({
     mutationKey: ["colorUpdate"],
@@ -128,7 +121,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("colors");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const [isOpenCate, setIsOpenCate] = useState(false);
