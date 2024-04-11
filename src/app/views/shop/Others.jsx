@@ -910,7 +910,7 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
     maxValue: Yup.number().required("Required"),
     minTotalValue: Yup.number().required("Required"),
     startDate: Yup.date().required("Start Date is required").nullable(),
-    expireDate: Yup.date()
+    exprireDate: Yup.date()
       .required("Expire Date is required")
       .nullable()
       .when(
@@ -927,14 +927,14 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
     minTotalValue: undefined,
     description: undefined,
     startDate: dayjs(),
-    expireDate: dayjs()
+    exprireDate: dayjs()
   };
   let newInitdata = {};
   if (type === "edit") {
     const newStartDate = dayjs(initData.startDate);
-    const newExpireDate = dayjs(initData.exprireDate);
+    const newExprireDate = dayjs(initData.exprireDate);
 
-    newInitdata = { ...initData, startDate: newStartDate, expireDate: newExpireDate };
+    newInitdata = { ...initData, startDate: newStartDate, exprireDate: newExprireDate };
     console.log("edit=", newInitdata);
   }
 
@@ -1083,9 +1083,9 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                   />
                   <DatePicker
                     label="Expire Date"
-                    value={values.expireDate}
+                    value={values.exprireDate}
                     onChange={(newValue) => {
-                      setFieldValue("expireDate", newValue);
+                      setFieldValue("exprireDate", newValue);
                     }}
                     renderInput={(params) => <TextField fullWidth {...params} />}
                   />
