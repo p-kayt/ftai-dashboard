@@ -92,23 +92,23 @@ export default function OrderItemRender({ order }) {
                 </div>
             </div>
 
-            {order?.orderItems?.map((data) => (
-                <div key={data?.product?.id} style={styles.productContainer}>
+            {order.orderItems.map((data) => (
+                <div key={data.product.id} style={styles.productContainer}>
                     <div style={styles.productDetails}>
                         <div style={styles.productImageContainer}>
-                            <img style={styles.productImage} src={data?.product.defaultImage} alt='Product' />
+                            <img style={styles.productImage} src={data.product.defaultImage} alt='Product' />
                         </div>
                         <div>
-                            <div style={styles.productName}>{data?.product.name}</div>
+                            <div style={styles.productName}>{data.product.name}</div>
                             <div style={styles.productInfo}>
-                                <div style={styles.productSizeColor}>Size: {data?.size}</div>
-                                <div style={{ ...styles.colorIndicator, backgroundColor: `${data?.color}` }}></div>
+                                <div style={styles.productSizeColor}>Size: {data.size}</div>
+                                <div style={{ ...styles.colorIndicator, backgroundColor: `${data.color}` }}></div>
                             </div>
                         </div>
                     </div>
                     <div style={styles.productPriceQuantity}>
-                        <div style={styles.productPrice}>{transNumberFormatter(data?.price)} VNĐ</div>
-                        <div style={styles.productQuantity}>Qty: {data?.quantity}</div>
+                        <div style={styles.productPrice}>{transNumberFormatter(data.price)} VNĐ</div>
+                        <div style={styles.productQuantity}>Qty: {data.quantity}</div>
                     </div>
                 </div>
             ))}

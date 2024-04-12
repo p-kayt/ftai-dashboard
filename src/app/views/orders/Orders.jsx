@@ -4,6 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import { getAllOrders } from 'api/orderApi';
 import { dateConvert, transNumberFormatter } from 'app/utils/utils';
 import { useNavigate } from 'react-router-dom'
+import Chip from '@mui/material/Chip';
+import { processStatusPayment, processStatusPaymentColor } from './PaymentDislay';
+
 export const processNumber = (number) => {
     switch (number) {
         case 1:
@@ -53,7 +56,6 @@ export default function Orders() {
         queryKey: ["orders"],
         queryFn: getAllOrders
     });
-
     const navigate = useNavigate()
 
 
@@ -66,7 +68,7 @@ export default function Orders() {
         {
             field: "recipientName",
             headerName: "Name",
-            width: 230,
+            width: 180,
         },
         {
             field: "recipientPhone",
@@ -97,11 +99,25 @@ export default function Orders() {
             headerName: "Order Status",
             width: 200,
             renderCell: (params) => (
-                <strong>
-                    <div style={{ margin: "0 auto" }}>
-                        {processNumber(params.row.status)}
-                    </div>
-                </strong>
+                <div style={{ margin: "0 auto" }}>
+                    <Chip style={{
+                        fontFamily: 'Poppins',
+                        fontWeight: 600,
+                    }} label={processNumber(params.row.status)} color={processNumberColor(params.row.status)} />
+                </div>
+            )
+        },
+        {
+            field: "payment",
+            headerName: "Payment Status",
+            width: 200,
+            renderCell: (params) => (
+                <div style={{ margin: "0 auto" }}>
+                    <Chip label={processStatusPayment(params.row.payment.status)} color={processStatusPaymentColor(params.row.payment.status)} style={{
+                        fontFamily: 'Poppins',
+                        fontWeight: 700,
+                    }} />
+                </div>
             )
         },
         {
