@@ -1039,7 +1039,7 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                     type="number"
                     style={{ flex: 1 }}
                     name="minTotalValue"
-                    label="Min Total Value"
+                    label="Min Price to get voucher"
                     value={values.minTotalValue}
                     onChange={handleChange}
                     error={touched.minTotalValue && !!errors.minTotalValue}
@@ -1050,7 +1050,7 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                     type="number"
                     style={{ flex: 1 }}
                     name="maxValue"
-                    label="Max Value"
+                    label="Highest discount amounts"
                     value={values.maxValue}
                     onChange={handleChange}
                     error={touched.maxValue && !!errors.maxValue}
@@ -1069,6 +1069,7 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                   <DatePicker
                     label="Start Date"
                     value={values.startDate}
+                    disablePast
                     onChange={(newValue) => {
                       setFieldValue("startDate", newValue);
                     }}
@@ -1077,6 +1078,7 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                   <DatePicker
                     label="Expire Date"
                     value={values.exprireDate}
+                    disablePast
                     onChange={(newValue) => {
                       setFieldValue("exprireDate", newValue);
                     }}

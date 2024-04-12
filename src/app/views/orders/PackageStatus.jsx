@@ -4,6 +4,7 @@ import { processNumber, processNumberColor } from './Orders';
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
 import Box from '@mui/material/Box';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 
 export default function PackageStatus({ order }) {
@@ -69,6 +70,7 @@ export default function PackageStatus({ order }) {
         }
       `,
     );
+
     return (
         <div>
             <div style={styles.container}>
@@ -77,12 +79,12 @@ export default function PackageStatus({ order }) {
                     <Chip style={{
                         fontFamily: 'Poppins',
                         fontWeight: 600,
-                    }} label={processNumber(order?.status)} color={processNumberColor(order?.status)} />
+                    }} label={processNumber(order.status)} color={processNumberColor(order.status)} />
                 </div>
                 <div style={styles.content}>
                     <div style={styles.dateWrapper}>
                         <div style={styles.line}></div>
-                        <div style={styles.date}>{formatDate(order?.createAt)}</div>
+                        <div style={styles.date}>{formatDate(order.createAt)}</div>
                         <div style={styles.line}></div>
                     </div>
                     <div style={styles.label}>
@@ -94,56 +96,58 @@ export default function PackageStatus({ order }) {
                             <div style={styles.detailsAddress}>72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam</div>
                         </div>
                         <div style={styles.detailsRight}>
-                            <div style={styles.detailsTime}>{formatTime(order?.createAt)}</div>
+                            <div style={styles.detailsTime}>{formatTime(order.createAt)}</div>
                         </div>
                     </div>
                 </div>
-                <div style={styles.content}>
+                {(order.status === 5 || order.status === 6) && <div style={styles.content}>
                     <div style={styles.dateWrapper}>
                         <div style={styles.line}></div>
-                        <div style={styles.date}>{formatDate(order?.createAt)}</div>
+                        {/* <div style={styles.date}>{formatDate(order.createAt)}</div> */}
                         <div style={styles.line}></div>
                     </div>
-                    <div style={styles.label}>
-                        <div style={styles.labelText}>Delivering</div>
+                    <div style={{ ...styles.label, display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <div style={styles.labelText}>Confirmed Order</div>
+                        {/* <div style={styles.detailsTime}>{formatTime(order.createAt)}</div> */}
                     </div>
                     <div style={styles.details}>
                         <div style={styles.detailsLeft}>
-                            <div style={styles.detailsText}>Delivering by shipper</div>
+                            <div style={styles.detailsText}>Expected Delivery time</div>
                             <div style={styles.detailsAddress}>72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam</div>
                         </div>
                         <div style={styles.detailsRight}>
-                            <div style={styles.detailsTime}>{formatTime(order?.createAt)}</div>
+                            {/* <div style={styles.detailsTime}>{formatTime(dataAfterConfirm?.data?.expected_delivery_time)}</div> */}
                         </div>
                     </div>
-                </div>
-                <div style={styles.content}>
+                </div>}
+                {order.status === 6 && <div style={styles.content}>
                     <div style={styles.dateWrapper}>
                         <div style={styles.line}></div>
-                        <div style={styles.date}>{formatDate(order?.createAt)}</div>
+                        {/* <div style={styles.date}>{formatDate(order.createAt)}</div> */}
                         <div style={styles.line}></div>
                     </div>
-                    <div style={styles.label}>
+                    <div style={{ ...styles.label, display: 'flex', flexDirection: 'row', gap: '2px', alignItems: 'center' }}>
+                        <CheckCircleIcon color='success' fontSize='small' />
                         <div style={{ ...styles.labelText, color: 'green' }}>Delivered</div>
                     </div>
                     <div style={styles.details}>
                         <div style={styles.detailsLeft}>
                             <div style={styles.detailsText}>Delivered at Customer's House</div>
-                            <div style={styles.detailsAddress}>{order?.recipientAddress}</div>
+                            <div style={styles.detailsAddress}>{order.recipientAddress}</div>
                         </div>
                         <div style={styles.detailsRight}>
-                            <div style={styles.detailsTime}>{formatTime(order?.createAt)}</div>
+                            {/* <div style={styles.detailsTime}>{formatTime(order.createAt)}</div> */}
                         </div>
                     </div>
-                </div>
+                </div>}
             </div>
-            {order?.status === 3 && <div style={{ ...styles.container, marginTop: '15px' }}>
+            {order.status === 3 && <div style={{ ...styles.container, marginTop: '15px' }}>
                 <div style={styles.header}>
                     <div style={styles.title}>Cancel Reason</div>
                 </div>
                 <div style={styles.content}>
                     <Box fullWidth>
-                        <Textarea fullW aria-label="empty textarea" disabled defaultValue={order?.cancelReason} />
+                        <Textarea fullW aria-label="empty textarea" disabled defaultValue={order.cancelReason} />
                     </Box>
                 </div>
             </div>}

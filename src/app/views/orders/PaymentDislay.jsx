@@ -6,10 +6,15 @@ import Box from '@mui/material/Box';
 import Select from '@mui/material/Select';
 import { transNumberFormatter } from 'app/utils/utils';
 import moment from 'moment';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Button from '@mui/material/Button';
 import { TextareaAutosize as BaseTextareaAutosize } from '@mui/base/TextareaAutosize';
 import { styled } from '@mui/system';
+import Swal from "sweetalert2";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { acceptOrderbyIdnStatus, cancelOrderbyIdnStatus } from 'api/orderApi';
+import LoadingButton from '@mui/lab/LoadingButton';
+
 export const processStatusPayment = (number) => {
     switch (number) {
         case 1:
@@ -40,17 +45,43 @@ export const processStatusPaymentColor = (number) => {
     }
 }
 
-export default function PaymentDislay({ order }) {
-    const baseCharge = order?.orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
-    console.log('order', order)
+export default function PaymentDislay({ order, refetch }) {
+    const baseCharge = order.orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    const [loading, setLoading] = useState(false)
     const formatDate = (date) => moment(date).format("DD-MM-YYYY");
+    const queryClient = useQueryClient()
+    const acceptOrder = useMutation({
+        mutationKey: ["acceptorder"],
+        mutationFn: (data) => acceptOrderbyIdnStatus(data),
+        onSuccess: (res) => {
+            refetch()
+            queryClient.invalidateQueries(['acceptorder'])
+            setLoading(false)
+        },
+        onError: (error) => {
+            console.log(error)
+            setLoading(false)
+        }
+    });
+    const rejectOrder = useMutation({
+        mutationKey: ["cancelorder"],
+        mutationFn: (data) => cancelOrderbyIdnStatus(data),
+        onSuccess: () => {
+            refetch()
+            queryClient.invalidateQueries(['cancelorder'])
+            setLoading(false)
 
-
+        },
+        onError: (error) => {
+            console.log(error)
+            setLoading(false)
+        }
+    });
 
     const discountAmount = () => {
-        const discount = order?.promotion?.percent ? (baseCharge * order?.promotion?.percent) / 100 : 0;
-        if (discount > order?.promotion?.maxValue) {
-            return order?.promotion?.maxValue
+        const discount = order.promotion.percent ? (baseCharge * order.promotion.percent) / 100 : 0;
+        if (discount > order.promotion.maxValue) {
+            return order.promotion.maxValue
         } else {
             return discount
         }
@@ -62,6 +93,56 @@ export default function PaymentDislay({ order }) {
     const handleChange = (event) => {
         setStatus(event.target.value);
     };
+    const textareaRef = useRef();
+    const handleConfirmStatus = () => {
+        console.log(status)
+        if (status === 3) {
+            if (textareaRef.current.value !== '') {
+                Swal.fire({
+                    title: "Are you sure?",
+                    text: "You are about to cancel this order",
+                    icon: "warning",
+                    showCancelButton: true,
+                    confirmButtonColor: "#3085d6",
+                    cancelButtonColor: "#d33",
+                    confirmButtonText: "Yes, cancel it!"
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        setLoading(true)
+                        const data = {
+                            orderId: order.id,
+                            status: status,
+                            cancelReason: textareaRef.current.value
+                        }
+                        rejectOrder.mutate(data);
+                    }
+                })
+            } else {
+                Swal.fire("Error!", "You need to input a cancel reason", "error");
+            }
+
+        } else {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You are about to accept this order",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, accept it!"
+            }).then((result) => {
+                setLoading(true)
+                if (result.isConfirmed) {
+                    const data = {
+                        orderId: order.id,
+                        status: status
+                    }
+                    acceptOrder.mutate(data);
+                }
+            });
+        }
+    }
+
 
     const blue = {
         100: '#DAECFF',
@@ -120,7 +201,7 @@ export default function PaymentDislay({ order }) {
             <div style={styles.container}>
                 <div style={styles.header}>
                     <div style={styles.title}>Payment</div>
-                    <Chip label={processStatusPayment(order?.payment?.status)} color={processStatusPaymentColor(order?.payment.status)} style={{
+                    <Chip label={processStatusPayment(order.payment.status)} color={processStatusPaymentColor(order.payment.status)} style={{
                         fontFamily: 'Poppins',
                         fontWeight: 700,
                     }} />
@@ -129,17 +210,17 @@ export default function PaymentDislay({ order }) {
                     <div style={styles.chargeRow}>
                         <div style={styles.chargeLabel}>Payment method</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            {order?.payment?.paymentMethod?.name === 'Zalopay' && <img src='/assets/images/logos/7044033_zalo_icon.png' alt='temporary' />}
-                            <div style={styles.chargeAmount}>{order?.payment?.paymentMethod?.name}</div>
+                            {order.payment.paymentMethod.name === 'Zalopay' && <img src='/assets/images/logos/7044033_zalo_icon.png' alt='temporary' />}
+                            <div style={styles.chargeAmount}>{order.payment.paymentMethod.name}</div>
                         </div>
                     </div>
                     <div style={styles.chargeRow}>
                         <div style={styles.chargeLabel}>Transaction id</div>
-                        <div style={styles.date}>{order?.payment?.transactionId}</div>
+                        <div style={styles.date}>{order.payment.transactionId}</div>
                     </div>
                     <div style={styles.chargeRow}>
                         <div style={styles.chargeLabel}>Transaction date</div>
-                        <div style={styles.date}>{formatDate(order?.payment?.transactionDate)}</div>
+                        <div style={styles.date}>{formatDate(order.payment.transactionDate)}</div>
                     </div>
                     <div style={styles.textCharge}>Charge</div>
                     <div style={styles.charges}>
@@ -149,24 +230,24 @@ export default function PaymentDislay({ order }) {
                         </div>
                         <div style={styles.chargeRow}>
                             <div style={styles.chargeLabel}>Shipping charge</div>
-                            <div style={styles.chargeAmount}>{transNumberFormatter(order?.shippingFee)} VNĐ</div>
+                            <div style={styles.chargeAmount}>{transNumberFormatter(order.shippingFee)} VNĐ</div>
                         </div>
 
                         {/* check co discount moi render */}
-                        {order?.promotion !== null && <div style={styles.chargeRow}>
-                            <div style={styles.chargeLabel}>{`Voucher (${order?.promotion?.percent}%)`}</div>
+                        {order.promotion !== null && <div style={styles.chargeRow}>
+                            <div style={styles.chargeLabel}>{`Voucher (${order.promotion.percent}%)`}</div>
                             <div style={{ ...styles.chargeAmount, textDecorationLine: 'line-through' }}> {transNumberFormatter(discountAmount())} VNĐ</div>
                         </div>}
                         {/*  */}
 
                         <div style={styles.chargeRow}>
                             <div style={styles.totalLabel}>Total charge</div>
-                            <div style={styles.totalAmount}>{transNumberFormatter(order?.totalAmount)} VNĐ</div>
+                            <div style={styles.totalAmount}>{transNumberFormatter(order.totalAmount)} VNĐ</div>
                         </div>
                     </div>
                 </div>
             </div>
-            {order?.status === 4 && <div style={{ ...styles.container, marginTop: '15px' }}>
+            {order.status === 4 && <div style={{ ...styles.container, marginTop: '15px' }}>
                 <div style={styles.header}>
                     <div style={styles.title}>Order Control</div>
 
@@ -188,13 +269,14 @@ export default function PaymentDislay({ order }) {
                     {status === 3 && <Box fullWidth>
                         <div style={styles.labelText}>Cancel Reason</div>
                         <Textarea
+                            ref={textareaRef}
                             maxRows={6}
                             minRows={4}
                             aria-label="maximum height"
                             placeholder="Stock runs out..."
                         />
                     </Box>}
-                    <Button disabled={!status} variant="contained">Confirm</Button>
+                    <LoadingButton loading={loading} disabled={!status} variant="contained" onClick={handleConfirmStatus} >Confirm</LoadingButton>
                 </div>
             </div>}
         </div >

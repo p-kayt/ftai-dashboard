@@ -97,12 +97,12 @@ export default function OrderItemDetails({ order }) {
                 </div>
                 <div style={styles.contactInfo}>
                     <div style={styles.Maxcontent}>Customer's House</div>
-                    <div style={styles.content}>{order?.recipientAddress}</div>
+                    <div style={styles.content}>{order.recipientAddress}</div>
                 </div>
                 <div style={styles.contactInfo}>
-                    <div style={styles.Maxcontent}>{order?.recipientName}</div>
-                    <div style={styles.content}>{order?.user?.email}</div>
-                    <div style={styles.content}>{order?.recipientPhone}</div>
+                    <div style={styles.Maxcontent}>{order.recipientName}</div>
+                    <div style={styles.content}>{order.user.email}</div>
+                    <div style={styles.content}>{order.recipientPhone}</div>
                 </div>
             </div>
         </div>
