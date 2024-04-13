@@ -112,7 +112,7 @@ export default function PackageStatus({ order }) {
                     </div>
                     <div style={styles.details}>
                         <div style={styles.detailsLeft}>
-                            <div style={styles.detailsText}>Expected Delivery time</div>
+                            {/* <div style={styles.detailsText}>Expected Delivery time</div> */}
                             <div style={styles.detailsAddress}>72 Thành Thái, Phường 14, Quận 10, Hồ Chí Minh, Vietnam</div>
                         </div>
                         <div style={styles.detailsRight}>
