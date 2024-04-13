@@ -6,6 +6,12 @@ import { dateConvert, transNumberFormatter } from 'app/utils/utils';
 import { useNavigate } from 'react-router-dom'
 import Chip from '@mui/material/Chip';
 import { processStatusPayment, processStatusPaymentColor } from './PaymentDislay';
+import { Box } from '@mui/material';
+import AllInboxIcon from '@mui/icons-material/AllInbox';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
+import PlaylistAddCheckIcon from '@mui/icons-material/PlaylistAddCheck';
+import { TbTruckDelivery } from "react-icons/tb";
+import Loading from 'app/components/MatxLoading';
 
 export const processNumber = (number) => {
     switch (number) {
@@ -51,7 +57,8 @@ export default function Orders() {
     //https://ftai-api.monoinfinity.net/api/order
     const {
         data: orders,
-        isSuccess
+        isSuccess,
+        isFetching
     } = useQuery({
         queryKey: ["orders"],
         queryFn: getAllOrders
@@ -144,10 +151,45 @@ export default function Orders() {
         }
     ]
 
+    if (isFetching) {
+        return <Loading />
+    }
 
 
+    const orderStatusCounts = [
+        { title: 'All Orders', count: orders?.data?.length || 0 },
+        { title: 'Waiting Orders', count: orders?.data?.filter((order) => order.status === 4).length || 0 },
+        { title: 'Delivering Orders', count: orders?.data?.filter((order) => order.status === 5).length || 0 },
+        { title: 'Delivered Orders', count: orders?.data?.filter((order) => order.status === 6).length || 0 },
+        { title: 'Cancelled Orders', count: orders?.data?.filter((order) => order.status === 3).length || 0 },
+    ];
+    const OrderStatusCard = ({ title, count, icon }) => (
+        <Box
+            sx={{
+                width: '150px',
+                borderRadius: '5px',
+                border: '1px solid #E0E0E0',
+                display: 'flex',
+                flexDirection: 'row',
+                height: '80px',
+                alignItems: 'center',
+                padding: '10px',
+                gap: '10px',
+            }}
+        >
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontSize: '12px', fontFamily: 'Poppins', fontWeight: 500, color: '#9BA4B5' }}>{title}</div>
+                <div style={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: 700, color: title === 'Cancelled Orders' ? 'red' : 'inherit' }}>{count}</div>
+            </div>
+        </Box>
+    );
     return (
         <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
+            <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: '20px', marginBottom: '20px' }}>
+                {orderStatusCounts.map((status) => (
+                    <OrderStatusCard key={status.title} {...status} />
+                ))}
+            </Box>
             {isSuccess && <DataGrid
                 rows={orders?.data}
                 columns={columns}
