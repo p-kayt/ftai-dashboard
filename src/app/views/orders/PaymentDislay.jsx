@@ -48,6 +48,7 @@ export const processStatusPaymentColor = (number) => {
 export default function PaymentDislay({ order, refetch }) {
     const baseCharge = order.orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
     const [loading, setLoading] = useState(false)
+    const [loading2, setLoading2] = useState(false)
     const formatDate = (date) => moment(date).format("DD-MM-YYYY");
     const queryClient = useQueryClient()
     const acceptOrder = useMutation({
@@ -69,12 +70,12 @@ export default function PaymentDislay({ order, refetch }) {
         onSuccess: () => {
             refetch()
             queryClient.invalidateQueries(['cancelorder'])
-            setLoading(false)
+            setLoading2(false)
 
         },
         onError: (error) => {
             console.log(error)
-            setLoading(false)
+            setLoading2(false)
         }
     });
 
@@ -88,114 +89,66 @@ export default function PaymentDislay({ order, refetch }) {
     }
 
 
-    const [status, setStatus] = useState('');
-
-    const handleChange = (event) => {
-        setStatus(event.target.value);
-    };
-    const textareaRef = useRef();
-    const handleConfirmStatus = () => {
-        console.log(status)
-        if (status === 3) {
-            if (textareaRef.current.value !== '') {
-                Swal.fire({
-                    title: "Are you sure?",
-                    text: "You are about to cancel this order",
-                    icon: "warning",
-                    showCancelButton: true,
-                    confirmButtonColor: "#3085d6",
-                    cancelButtonColor: "#d33",
-                    confirmButtonText: "Yes, cancel it!"
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        setLoading(true)
-                        const data = {
-                            orderId: order.id,
-                            status: status,
-                            cancelReason: textareaRef.current.value
-                        }
-                        rejectOrder.mutate(data);
-                    }
-                })
-            } else {
-                Swal.fire("Error!", "You need to input a cancel reason", "error");
-            }
-
-        } else {
+    const handleCancelOrder = async (status) => {
+        const { value: text } = await Swal.fire({
+            input: "textarea",
+            inputLabel: "Cancel Reason",
+            inputPlaceholder: "Out of stock...",
+            inputAttributes: {
+                "aria-label": "Out of stock"
+            },
+            inputValidator: (value) => {
+                if (!value) {
+                    return "You need to tell cancel reason!";
+                }
+            },
+            showCancelButton: true
+        });
+        if (text) {
             Swal.fire({
                 title: "Are you sure?",
-                text: "You are about to accept this order",
+                text: "You are about to cancel this order",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Yes, accept it!"
+                confirmButtonText: "Yes, cancel it!"
             }).then((result) => {
-                setLoading(true)
                 if (result.isConfirmed) {
+                    setLoading2(true)
                     const data = {
                         orderId: order.id,
-                        status: status
+                        status: status,
+                        cancelReason: text
                     }
-                    acceptOrder.mutate(data);
+                    rejectOrder.mutate(data);
                 }
-            });
+            })
         }
     }
 
 
-    const blue = {
-        100: '#DAECFF',
-        200: '#b6daff',
-        400: '#3399FF',
-        500: '#007FFF',
-        600: '#0072E5',
-        900: '#003A75',
-    };
+    const handleConfirmOrder = (status) => {
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You are about to accept this order",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, accept it!"
+        }).then((result) => {
+            setLoading(true)
+            if (result.isConfirmed) {
+                const data = {
+                    orderId: order.id,
+                    status: status
+                }
+                acceptOrder.mutate(data);
+            }
+        });
+    }
 
-    const grey = {
-        50: '#F3F6F9',
-        100: '#E5EAF2',
-        200: '#DAE2ED',
-        300: '#C7D0DD',
-        400: '#B0B8C4',
-        500: '#9DA8B7',
-        600: '#6B7A90',
-        700: '#434D5B',
-        800: '#303740',
-        900: '#1C2025',
-    };
-
-    const Textarea = styled(BaseTextareaAutosize)(
-        ({ theme }) => `
-          box-sizing: border-box;
-          width: 100%;
-          font-family: 'Roboto', sans-serif;
-          font-size: 0.875rem;
-          font-weight: 400;
-          line-height: 1.5;
-          padding: 8px 12px;
-          border-radius: 8px;
-          color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
-          background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
-          border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-          box-shadow: 0px 2px 2px ${theme.palette.mode === 'dark' ? grey[900] : grey[50]};
-      
-          &:hover {
-            border-color: ${blue[400]};
-          }
-      
-          &:focus {
-            border-color: ${blue[400]};
-            box-shadow: 0 0 0 3px ${theme.palette.mode === 'dark' ? blue[600] : blue[200]};
-          }
-      
-          // firefox
-          &:focus-visible {
-            outline: 0;
-          }
-        `,
-    );
     return (
         <div>
             <div style={styles.container}>
@@ -253,30 +206,8 @@ export default function PaymentDislay({ order, refetch }) {
 
                 </div>
                 <div style={styles.content}>
-                    <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">Order Status Update</InputLabel>
-                        <Select
-                            labelId="demo-simple-select-label"
-                            id="demo-simple-select"
-                            value={status}
-                            label="Order Status Update"
-                            onChange={handleChange}
-                        >
-                            <MenuItem value={7}>Accept Order</MenuItem>
-                            <MenuItem value={3}>Cancel Order</MenuItem>
-                        </Select>
-                    </FormControl>
-                    {status === 3 && <Box fullWidth>
-                        <div style={styles.labelText}>Cancel Reason</div>
-                        <Textarea
-                            ref={textareaRef}
-                            maxRows={6}
-                            minRows={4}
-                            aria-label="maximum height"
-                            placeholder="Stock runs out..."
-                        />
-                    </Box>}
-                    <LoadingButton loading={loading} disabled={!status} variant="contained" onClick={handleConfirmStatus} >Confirm</LoadingButton>
+                    <LoadingButton disabled={loading2} loading={loading} color='primary' variant="contained" onClick={() => handleConfirmOrder(7)} >Confirm Order</LoadingButton>
+                    <LoadingButton disabled={loading} loading={loading2} color='error' onClick={() => handleCancelOrder(3)} >Cancel Order</LoadingButton>
                 </div>
             </div>}
         </div >
