@@ -4,10 +4,7 @@ export const getAllOrders = async (props) => {
   const res = await instance.get("/api/order");
   return res.data;
 };
-export const getAllUsers = async (props) => {
-  const res = await instance.get("/api/user");
-  return res.data;
-};
+
 export const getOrderById = async (orderId) => {
   const res = await instance.get(`/api/order/${orderId}`);
   return res.data;

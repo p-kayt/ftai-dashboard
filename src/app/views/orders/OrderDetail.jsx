@@ -2,12 +2,11 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { useQuery } from "@tanstack/react-query";
 import { getOrderById } from 'api/orderApi';
+import Loading from 'app/components/MatxLoading';
 import { useParams } from 'react-router-dom';
 import OrderItemMainSection from './OrderItemMainSection';
 import PackageStatus from './PackageStatus';
 import PaymentDislay from './PaymentDislay';
-import Loading from 'app/components/MatxLoading';
-import { useState } from 'react';
 
 export default function OrderDetail() {
 

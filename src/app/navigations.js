@@ -35,13 +35,19 @@ export const navigations = [
   {
     label: "Users",
     type: "label",
-    role: authRoles.manager
+    role: authRoles.staff
   },
   {
     name: "Users",
     icon: "people",
     path: "/users/user",
     role: authRoles.manager
+  },
+  {
+    name: "Chat",
+    icon: "chat",
+    path: "/users/chat",
+    role: authRoles.staff
   },
   {
     label: "Control Order",

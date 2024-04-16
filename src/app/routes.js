@@ -14,6 +14,7 @@ import User from "./views/users/User";
 import Others from "./views/shop/Others";
 import Orders from "./views/orders/Orders";
 import OrderDetail from "./views/orders/OrderDetail";
+import ChatCustomer from "./views/users/ChatCustomer";
 
 // SESSION PAGES
 const NotFound = Loadable(lazy(() => import("app/views/sessions/NotFound")));
@@ -39,6 +40,7 @@ const routes = [
       { path: "/shop/products", element: <Products />, auth: authRoles.admin },
       { path: "/shop/models", element: <Models />, auth: authRoles.admin },
       { path: "/users/user", element: <User />, auth: authRoles.admin },
+      { path: "/users/chat", element: <ChatCustomer />, auth: authRoles.admin },
       { path: "/shop/orders", element: <Orders />, auth: authRoles.admin },
       { path: "/shop/orders/:orderId", element: <OrderDetail />, auth: authRoles.admin },
       { path: "/shop/others", element: <Others />, auth: authRoles.admin },

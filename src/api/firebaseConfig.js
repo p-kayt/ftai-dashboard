@@ -20,6 +20,7 @@ import { getStorage, ref, listAll, getDownloadURL } from "firebase/storage";
 // Import the functions you need from the SDKs you need
 // import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
+import { collection, getFirestore } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -65,3 +66,7 @@ export const imageWithUrl = async ({ url }) => {
   // If no matching URL is found, throw an error
   throw new Error("No image found with the specified URL");
 };
+
+export const db = getFirestore(app);
+
+export const roomRef = collection(db, "rooms");
