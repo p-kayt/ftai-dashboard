@@ -114,6 +114,12 @@ export const transNumberFormatter = (number) => {
 
 export const dateConvert = (date) => {
   const originalDateTime = moment(date);
-  const formattedDateTime = originalDateTime.format("DD-MM-YYYY hh:mm");
+  const formattedDateTime = originalDateTime.format("DD-MM-YYYY hh:mm  A");
   return formattedDateTime;
+};
+
+export const getRoomId = (staffId, userId2) => {
+  const sortedIds = [staffId, userId2].sort();
+  const roomId = sortedIds.join("-");
+  return roomId;
 };

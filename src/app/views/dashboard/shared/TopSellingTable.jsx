@@ -1,19 +1,22 @@
 import { Edit } from "@mui/icons-material";
 import {
+  Avatar,
   Box,
   Card,
-  Table,
-  Select,
-  Avatar,
-  styled,
-  TableRow,
-  useTheme,
+  Chip,
+  IconButton,
   MenuItem,
+  Select,
+  Table,
   TableBody,
   TableCell,
   TableHead,
-  IconButton
+  TableRow,
+  Typography,
+  styled,
 } from "@mui/material";
+import { useQuery } from "@tanstack/react-query";
+import { getProdBestSelling } from "api/dashboardApi";
 import { Paragraph } from "app/components/Typography";
 
 // STYLED COMPONENTS
@@ -45,22 +48,17 @@ const ProductTable = styled(Table)(() => ({
   "& td:first-of-type": { paddingLeft: "16px !important" }
 }));
 
-const Small = styled("small")(({ bgcolor }) => ({
-  width: 50,
-  height: 15,
-  color: "#fff",
-  padding: "2px 8px",
-  borderRadius: "4px",
-  overflow: "hidden",
-  background: bgcolor,
-  boxShadow: "0 0 2px 0 rgba(0, 0, 0, 0.12), 0 2px 2px 0 rgba(0, 0, 0, 0.24)"
-}));
 
 export default function TopSellingTable() {
-  const { palette } = useTheme();
-  const bgError = palette.error.main;
-  const bgPrimary = palette.primary.main;
-  const bgSecondary = palette.secondary.main;
+
+  const {
+    data: prodBestSelling,
+    isSuccess,
+  } = useQuery({
+    queryKey: ["best-selling"],
+    queryFn: getProdBestSelling
+  });
+
 
   return (
     <Card elevation={3} sx={{ pt: "20px", mb: 3 }}>
@@ -73,7 +71,7 @@ export default function TopSellingTable() {
       </CardHeader>
 
       <Box overflow="auto">
-        <ProductTable>
+        {isSuccess && <ProductTable>
           <TableHead>
             <TableRow>
               <TableCell colSpan={4} sx={{ px: 3 }}>
@@ -85,7 +83,7 @@ export default function TopSellingTable() {
               </TableCell>
 
               <TableCell colSpan={2} sx={{ px: 0 }}>
-                Stock Status
+                Total Sell
               </TableCell>
 
               <TableCell colSpan={1} sx={{ px: 0 }}>
@@ -95,29 +93,29 @@ export default function TopSellingTable() {
           </TableHead>
 
           <TableBody>
-            {productList.map((product, index) => (
+            {prodBestSelling?.data?.map((product, index) => (
               <TableRow key={index} hover>
-                <TableCell colSpan={4} align="left" sx={{ px: 0, textTransform: "capitalize" }}>
+                <TableCell colSpan={4} align="left" sx={{ px: 0, textTransform: "capitalize", fontFamily: 'Poppins', fontWeight: 500 }}>
                   <Box display="flex" alignItems="center" gap={4}>
-                    <Avatar src={product.imgUrl} />
-                    <Paragraph>{product.name}</Paragraph>
+                    <Avatar src={product.defaultImage} />
+                    <Paragraph>{product.productName}</Paragraph>
+                    <Typography>Size: {product.size}</Typography>
+                    <div style={{ backgroundColor: product.color, width: '30px', height: '30px', borderRadius: '50px' }}></div>
                   </Box>
                 </TableCell>
 
-                <TableCell align="left" colSpan={2} sx={{ px: 0, textTransform: "capitalize" }}>
-                  ${product.price > 999 ? (product.price / 1000).toFixed(1) + "k" : product.price}
+                <TableCell align="left" colSpan={2} sx={{ px: 0, textTransform: "capitalize", fontFamily: 'Poppins', fontWeight: 500 }}>
+                  {product.revenue > 999 ? (product.revenue / 1000).toFixed(1) + "k" : product.revenue}
                 </TableCell>
 
                 <TableCell sx={{ px: 0 }} align="left" colSpan={2}>
-                  {product.available ? (
-                    product.available < 20 ? (
-                      <Small bgcolor={bgSecondary}>{product.available} available</Small>
+                  {product.totalSell ? (
+                    product.totalSell > 10 ? (
+                      <Chip label={product.totalSell} color="success" />
                     ) : (
-                      <Small bgcolor={bgPrimary}>in stock</Small>
+                      <Chip label={product.totalSell} color="primary" />
                     )
-                  ) : (
-                    <Small bgcolor={bgError}>out of stock</Small>
-                  )}
+                  ) : null}
                 </TableCell>
 
                 <TableCell sx={{ px: 0 }} colSpan={1}>
@@ -128,41 +126,8 @@ export default function TopSellingTable() {
               </TableRow>
             ))}
           </TableBody>
-        </ProductTable>
+        </ProductTable>}
       </Box>
     </Card>
   );
 }
-
-const productList = [
-  {
-    imgUrl: "/assets/images/products/headphone-2.jpg",
-    name: "earphone",
-    price: 100,
-    available: 15
-  },
-  {
-    imgUrl: "/assets/images/products/headphone-3.jpg",
-    name: "earphone",
-    price: 1500,
-    available: 30
-  },
-  {
-    imgUrl: "/assets/images/products/iphone-2.jpg",
-    name: "iPhone x",
-    price: 1900,
-    available: 35
-  },
-  {
-    imgUrl: "/assets/images/products/iphone-1.jpg",
-    name: "iPhone x",
-    price: 100,
-    available: 0
-  },
-  {
-    imgUrl: "/assets/images/products/headphone-3.jpg",
-    name: "Head phone",
-    price: 1190,
-    available: 5
-  }
-];

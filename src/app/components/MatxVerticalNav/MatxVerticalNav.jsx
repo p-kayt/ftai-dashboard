@@ -80,7 +80,7 @@ export default function MatxVerticalNav({ items }) {
   const { settings } = useSettings();
   const { mode } = settings.layout1Settings.leftSidebar;
   const { user } = useAuth()
-  const { roleId } = user
+  const roleId = user?.roleId
 
   const renderLevels = (data) => {
     return data.map((item, index) => {

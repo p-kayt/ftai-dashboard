@@ -1,6 +1,10 @@
 import { Box, Card, Grid, IconButton, styled, Tooltip } from "@mui/material";
 import { AttachMoney, Group, ShoppingCart, Store, ArrowRightAlt } from "@mui/icons-material";
 import { Small } from "app/components/Typography";
+import { useQuery } from "@tanstack/react-query";
+import { getAllOrders } from "api/orderApi";
+import { getRevenue } from "api/usersApi";
+import { transNumberFormatter } from "app/utils/utils";
 
 // STYLED COMPONENTS
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -30,11 +34,19 @@ const Heading = styled("h6")(({ theme }) => ({
 }));
 
 export default function StatCards() {
+
+  const {
+    data: revenue,
+  } = useQuery({
+    queryKey: ["revenue"],
+    queryFn: getRevenue
+  });
+
   const cardList = [
-    { name: "New Leads", amount: 3050, Icon: Group },
-    { name: "This week Sales", amount: "$80,500", Icon: AttachMoney },
-    { name: "Inventory Status", amount: "8.5% Stock Surplus", Icon: Store },
-    { name: "Orders to deliver", amount: "305 Orders", Icon: ShoppingCart }
+    { name: "Revenue", amount: `${transNumberFormatter(revenue?.data?.totalRevenue)} VNĐ`, Icon: AttachMoney },
+    { name: "This Month Sales", amount: `${transNumberFormatter(revenue?.data?.monthlyRevenue)} VNĐ`, Icon: AttachMoney },
+    { name: "Inventory Status", amount: `${revenue?.data?.totalProductSell} products sold`, Icon: Store },
+    { name: "Orders to deliver", amount: `${revenue?.data?.totalOrder} Orders`, Icon: ShoppingCart }
   ];
 
   return (
