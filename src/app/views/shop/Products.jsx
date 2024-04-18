@@ -226,6 +226,50 @@ const Products = () => {
       valueGetter: (value) => value.name
     },
     {
+      field: "sku",
+      headerName: "Available variant (SKU codes)",
+      sortable: false,
+      flex: 1.5,
+      renderCell: (params) => (
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            flexDirection: "row",
+            gap: "5px",
+            justifyContent: "center",
+            alignItems: "center",
+            maxHeight: "60px",
+            overflowY: "auto",
+            padding: "10px 0px"
+          }}
+        >
+          {params.row.productVariants.map((item, index) => {
+            if (item.sku)
+              return (
+                <div
+                  key={index}
+                  style={{
+                    backgroundColor: "#53609D",
+                    height: "30px",
+                    minWidth: "50px",
+                    display: "flex",
+                    padding: "2px 5px",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    border: "solid 1px gray",
+                    borderRadius: "10px",
+                    color: "white"
+                  }}
+                >
+                  {item.sku}
+                </div>
+              );
+          })}
+        </div>
+      )
+    },
+    {
       field: "defaultImage",
       headerName: "Image",
       sortable: false,
@@ -240,32 +284,31 @@ const Products = () => {
       width: 200,
       renderCell: (params) => (
         <strong>
-          <div style={{ margin: "0 auto" }}>
-            <button
-              style={{
-                backgroundColor: "#004CFF",
-                marginRight: "5px",
-                color: "white",
-                padding: "10px 24px",
-                borderRadius: "5px",
-                cursor: "pointer"
-              }}
+          <div
+            style={{
+              margin: "8px auto",
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <Button
+              sx={{ width: "70px" }}
+              color="success"
+              variant="outlined"
               onClick={() => handleEdit(params.row.id)}
             >
               Edit
-            </button>
-            <button
-              style={{
-                backgroundColor: "red",
-                color: "white",
-                padding: "10px 24px",
-                borderRadius: "5px",
-                cursor: "pointer"
-              }}
+            </Button>
+            <Button
+              sx={{ width: "100px" }}
+              color="error"
+              variant="outlined"
               onClick={() => handleDelete(params.row.id)}
             >
               Delete
-            </button>
+            </Button>
           </div>
         </strong>
       )
@@ -276,7 +319,7 @@ const Products = () => {
     <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
       <div style={{ margin: "10px 0px" }}>
         <Button
-          style={{ marginBottom: "10px" }}
+          style={{ marginBottom: "10px", backgroundColor: "#53609D" }}
           variant="contained"
           onClick={() => {
             setProduct(null);
@@ -411,7 +454,7 @@ const Modal = ({
   };
 
   const [initData, setInitData] = useState();
-  // console.log(initProduct);
+
   if (type === "edit") {
     if (!imagesFetched) {
       let newImgs = [];
@@ -423,7 +466,7 @@ const Modal = ({
         .then((newImages) => {
           // newImages is an array of image objects
           newImgs = [...newImages.flat()];
-
+          console.log("inside", initProduct);
           setInitData({
             ...createData,
             name: initProduct.name,
@@ -442,12 +485,32 @@ const Modal = ({
             })),
             images: newImgs
           });
-          // console.log(initData);
+          console.log("initData", initData);
           setImagesFetched(true); // Set imagesFetched to true after images have been fetched
         })
         .catch((error) => {
           console.error(error);
-        });
+          setInitData({
+            ...createData,
+            name: initProduct.name,
+            description: initProduct.description,
+            defaultImage: initProduct.defaultImage,
+            tryOnImage: initProduct.tryOnImage,
+            canTryOn: initProduct.canTryOn,
+            edgeImage: initProduct.edgeImage,
+            categoryId: initProduct.category.id,
+            brandId: initProduct.brand.id,
+            productVariants: initProduct.productVariants.map((variant) => ({
+              colorId: variant.colorId,
+              sizeId: variant.sizeId,
+              quantity: variant.quantity,
+              price: variant.price
+            })),
+            images: initProduct.images.map((image) => ({ url: image.imageUrl }))
+          });
+          setImagesFetched(true);
+        })
+        .finally();
     }
   }
 
@@ -591,7 +654,7 @@ const Modal = ({
                               <TextField
                                 style={{ width: "100%" }}
                                 label="Name"
-                                defaultValue={imgData.name}
+                                defaultValue={imgData.name ? imgData.name : ""}
                                 InputProps={{
                                   readOnly: true
                                 }}
