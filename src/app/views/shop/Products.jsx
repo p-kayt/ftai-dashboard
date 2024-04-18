@@ -203,12 +203,12 @@ const Products = () => {
       sortable: false,
       flex: 2
     },
-    {
-      field: "totalSold",
-      headerName: "Total sold",
-      // sortable: false,
-      width: 100
-    },
+    // {
+    //   field: "totalSold",
+    //   headerName: "Total sold",
+    //   // sortable: false,
+    //   width: 100
+    // },
     {
       field: "brand",
       headerName: "Brand",
@@ -229,7 +229,7 @@ const Products = () => {
       field: "sku",
       headerName: "Available variant (SKU codes)",
       sortable: false,
-      flex: 1.5,
+      flex: 1.8,
       renderCell: (params) => (
         <div
           style={{
