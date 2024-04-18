@@ -13,7 +13,7 @@ export default function MessageItem({ message, activeUserId }) {
     };
 
     return (
-        <div key={message.userId} style={{ display: 'flex', justifyContent: isCurrentUser ? 'flex-end' : 'flex-start', marginBottom: '20px' }}>
+        <div key={message.userId} style={{ display: 'flex', justifyContent: isCurrentUser ? 'flex-end' : 'flex-start', marginBottom: '10px' }}>
             <div style={{ maxWidth: '80%' }}>
                 <div style={{ display: 'flex', padding: '10px', borderRadius: '10px', ...messageStyle }}>
                     <div>{message.text}</div>

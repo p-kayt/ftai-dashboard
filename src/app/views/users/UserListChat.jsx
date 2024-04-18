@@ -1,8 +1,9 @@
-import { Avatar } from "@mui/material";
+import { Avatar, IconButton } from "@mui/material";
 import { db } from "api/firebaseConfig";
 import { getRoomId } from "app/utils/utils";
-import { collection, doc, onSnapshot, orderBy, query } from "firebase/firestore";
+import { collection, deleteDoc, doc, onSnapshot, orderBy, query } from "firebase/firestore";
 import { useState, useEffect } from "react";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function UserListChat({ listUser, setActiveUserId, activeUserId }) {
   const [lastMessages, setLastMessages] = useState({});
@@ -32,7 +33,7 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
 
   const renderLastMessage = (userId) => {
     const lastMessage = lastMessages[userId];
-    if (!lastMessage) return "Waiting for customer";
+    if (!lastMessage) return "...";
     if (userId === "StaffIdToChat") return `You: ${lastMessage.text}`;
     return lastMessage.userId === "StaffIdToChat" ? `You: ${lastMessage.text}` : lastMessage.text;
   };
@@ -40,7 +41,16 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
   const handleShare = (id) => {
     setActiveUserId(id);
   };
-
+  const handleDeleteUser = async (userId) => {
+    try {
+      // Delete the document corresponding to the user
+      const roomId = getRoomId("StaffIdToChat", userId);
+      await deleteDoc(doc(db, "rooms", roomId));
+      console.log("Document successfully deleted!");
+    } catch (error) {
+      console.error("Error removing document: ", error);
+    }
+  };
   return (
     <div>
       {listUser.map((user) => (
@@ -49,6 +59,7 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
           style={{
             display: "flex",
             flexDirection: "row",
+            width: "360px",
             height: "60px",
             padding: "10px",
             gap: "10px",
@@ -61,33 +72,49 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
           onClick={() => handleShare(user.id)}
         >
           <Avatar src={user.profilePicture} />
-          <div
-            style={{
-              width: "80%",
-              overflowX: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-              scrollbarWidth: "none" /* For Firefox */,
-              msOverflowStyle: "none" /* For Internet Explorer and Edge */,
-              "&::-webkit-scrollbar": {
-                display: "none"
-              },
-              cursor: "default"
-            }}
-          >
-            <div style={{ fontFamily: "Poppins", fontWeight: 600 }}>
-              <div>{user.fullName}</div>
-              {/* Render last message for each user */}
+          <div>
+            <div
+              style={{
+                fontFamily: "Poppins",
+                fontWeight: 600,
+                width: "300px",
+                display: "flex",
+                flexDirection: "row",
+                gap: "10px",
+                justifyContent: "space-between"
+                // backgroundColor: "aqua"
+              }}
+            >
               <div
                 style={{
-                  fontFamily: "Poppins",
-                  fontWeight: 400,
-                  color: "gray",
-                  fontSize: "13px"
+                  width: "80%",
+                  overflowX: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  scrollbarWidth: "none" /* For Firefox */,
+                  msOverflowStyle: "none" /* For Internet Explorer and Edge */,
+                  "&::-webkit-scrollbar": {
+                    display: "none"
+                  },
+                  cursor: "default"
                 }}
               >
-                {renderLastMessage(user.id)}
+                <div>{user.fullName}</div>
+                {/* Render last message for each user */}
+                <div
+                  style={{
+                    fontFamily: "Poppins",
+                    fontWeight: 400,
+                    color: "gray",
+                    fontSize: "13px"
+                  }}
+                >
+                  {renderLastMessage(user.id)}
+                </div>
               </div>
+              <IconButton onClick={() => handleDeleteUser(user.id)}>
+                <DeleteIcon />
+              </IconButton>
             </div>
           </div>
         </div>
