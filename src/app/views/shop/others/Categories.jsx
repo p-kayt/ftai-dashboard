@@ -81,31 +81,32 @@ const Categories = (props) => {
       width: 200,
       renderCell: (params) => (
         <strong>
-          <button
+          <div
             style={{
-              backgroundColor: "#004CFF",
-              marginRight: "5px",
-              color: "white",
-              padding: "10px 24px",
-              borderRadius: "5px",
-              cursor: "pointer"
+              margin: "8px auto",
+              display: "flex",
+              gap: "10px",
+              alignItems: "center",
+              justifyContent: "center"
             }}
-            onClick={() => handleEdit(params.row.id)}
           >
-            Edit
-          </button>
-          <button
-            style={{
-              backgroundColor: "red",
-              color: "white",
-              padding: "10px 24px",
-              borderRadius: "5px",
-              cursor: "pointer"
-            }}
-            onClick={() => handleDelete(params.row.id)}
-          >
-            Delete
-          </button>
+            <Button
+              sx={{ width: "70px" }}
+              color="success"
+              variant="outlined"
+              onClick={() => handleEdit(params.row.id)}
+            >
+              Edit
+            </Button>
+            <Button
+              sx={{ width: "100px" }}
+              color="error"
+              variant="outlined"
+              onClick={() => handleDelete(params.row.id)}
+            >
+              Delete
+            </Button>
+          </div>
         </strong>
       )
     }
@@ -114,7 +115,7 @@ const Categories = (props) => {
   return (
     <div style={{ margin: "10px 20px" }}>
       <Button
-        style={{ marginBottom: "10px" }}
+        style={{ marginBottom: "10px", backgroundColor: "#53609D" }}
         variant="contained"
         onClick={() => {
           setModalOpen(true);
