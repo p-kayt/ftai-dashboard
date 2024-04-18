@@ -34,8 +34,6 @@ const routes = [
       </AuthGuard>
     ),
     children: [
-      ...materialRoutes,
-      // dashboard route
       { path: "/dashboard/default", element: <Analytics />, auth: authRoles.admin },
       { path: "/shop/products", element: <Products />, auth: authRoles.admin },
       { path: "/shop/models", element: <Models />, auth: authRoles.admin },
@@ -44,8 +42,6 @@ const routes = [
       { path: "/shop/orders", element: <Orders />, auth: authRoles.admin },
       { path: "/shop/orders/:orderId", element: <OrderDetail />, auth: authRoles.admin },
       { path: "/shop/others", element: <Others />, auth: authRoles.admin },
-
-      // e-chart route
       { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.editor }
     ]
   },
@@ -55,9 +51,7 @@ const routes = [
   { path: "/session/signin", element: <JwtLogin /> },
   { path: "/session/signup", element: <JwtRegister /> },
   { path: "/session/forgot-password", element: <ForgotPassword /> },
-
   { path: "/", element: <Navigate to="dashboard/default" /> },
-
   { path: "*", element: <NotFound /> }
 ];
 
