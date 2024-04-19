@@ -215,7 +215,7 @@ const Models = () => {
       </Button>
       {isSuccess && (
         <DataGrid
-          rows={models.data}
+          rows={models.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
             pagination: {

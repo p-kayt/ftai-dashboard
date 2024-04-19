@@ -1,11 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogTitle,
-  IconButton,
-  Paper,
-  TextField
-} from "@mui/material";
+import { Button, Dialog, DialogTitle, IconButton, Paper, TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -23,7 +16,7 @@ import {
   updateSize
 } from "api/othersApi";
 import dayjs from "dayjs";
-import { Formik } from "formik";
+import { ErrorMessage, Formik } from "formik";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -42,7 +35,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("promos");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const promoUpdate = useMutation({
     mutationKey: ["promoUpdate"],
@@ -50,7 +43,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("promos");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   //category
@@ -60,7 +53,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const cateUpdate = useMutation({
     mutationKey: ["cateUpdate"],
@@ -68,7 +61,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   //brand
   const brandAdd = useMutation({
@@ -77,7 +70,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("brands");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const brandUpdate = useMutation({
     mutationKey: ["brandUpdate"],
@@ -85,7 +78,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("brands");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   //size
@@ -95,7 +88,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const sizeUpdate = useMutation({
     mutationKey: ["sizeUpdate"],
@@ -103,7 +96,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   //color
@@ -113,7 +106,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("colors");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const colorUpdate = useMutation({
     mutationKey: ["colorUpdate"],
@@ -121,7 +114,7 @@ const Others = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("colors");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const [isOpenCate, setIsOpenCate] = useState(false);
@@ -1069,7 +1062,6 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                   <DatePicker
                     label="Start Date"
                     value={values.startDate}
-                    disablePast
                     onChange={(newValue) => {
                       setFieldValue("startDate", newValue);
                     }}
@@ -1078,13 +1070,13 @@ const PromotionModal = ({ open, setOpen, type, initData, addCall, updateCall }) 
                   <DatePicker
                     label="Expire Date"
                     value={values.exprireDate}
-                    disablePast
                     onChange={(newValue) => {
                       setFieldValue("exprireDate", newValue);
                     }}
                     renderInput={(params) => <TextField fullWidth {...params} />}
                   />
                 </div>
+                <ErrorMessage name="exprireDate" component="div" style={{ color: "red" }} />
                 <TextField
                   style={{ width: "100%" }}
                   inputProps={{ style: { height: "100px" } }}

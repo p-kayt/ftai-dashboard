@@ -7,10 +7,7 @@ import Swal from "sweetalert2";
 const Colors = (props) => {
   const { setModalOpen, setInit, setActionType } = props;
   const queryClient = useQueryClient();
-  const {
-    data: colors,
-    isSuccess
-  } = useQuery({
+  const { data: colors, isSuccess } = useQuery({
     queryKey: ["colors"],
     queryFn: getAllColors
   });
@@ -21,7 +18,7 @@ const Colors = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("colors");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const handleEdit = (id) => {
     const data = colors.data.find((item) => item.id === id);
@@ -125,7 +122,7 @@ const Colors = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
-          rows={colors.data}
+          rows={colors.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
             pagination: {
@@ -134,7 +131,7 @@ const Colors = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-        // checkboxSelection
+          // checkboxSelection
         />
       )}
     </div>

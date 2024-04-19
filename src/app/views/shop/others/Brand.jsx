@@ -8,10 +8,7 @@ import { deleteBrandById, getAllBrands } from "api/othersApi";
 const Brand = (props) => {
   const { setModalOpen, setInit, setActionType } = props;
   const queryClient = useQueryClient();
-  const {
-    data: brands,
-    isSuccess
-  } = useQuery({
+  const { data: brands, isSuccess } = useQuery({
     queryKey: ["brands"],
     queryFn: getAllBrands
   });
@@ -22,7 +19,7 @@ const Brand = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const handleEdit = (id) => {
@@ -122,7 +119,7 @@ const Brand = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
-          rows={brands.data}
+          rows={brands.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
             pagination: {
@@ -131,7 +128,7 @@ const Brand = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-        // checkboxSelection
+          // checkboxSelection
         />
       )}
     </div>

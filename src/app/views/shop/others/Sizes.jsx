@@ -9,10 +9,7 @@ const Sizes = (props) => {
   const { setModalOpen, setInit, setActionType } = props;
   const queryClient = useQueryClient();
 
-  const {
-    data: sizes,
-    isSuccess
-  } = useQuery({
+  const { data: sizes, isSuccess } = useQuery({
     queryKey: ["sizes"],
     queryFn: getAllSizes
   });
@@ -23,7 +20,7 @@ const Sizes = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const handleEdit = (id) => {
@@ -122,7 +119,7 @@ const Sizes = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
-          rows={sizes.data}
+          rows={sizes.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
             pagination: {
@@ -131,7 +128,7 @@ const Sizes = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-        // checkboxSelection
+          // checkboxSelection
         />
       )}
     </div>
