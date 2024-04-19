@@ -10,13 +10,13 @@ export const navigations = [
     name: "Dashboard",
     path: "/dashboard/default",
     icon: "dashboard",
-    role: authRoles.staff
+    role: authRoles.manager
   },
   {
     name: "Charts",
     icon: "chart",
     path: "/charts/echarts",
-    role: authRoles.admin
+    role: authRoles.manager
   },
   {
     label: "Store",
@@ -52,7 +52,7 @@ export const navigations = [
     name: "Users",
     icon: "people",
     path: "/users/user",
-    role: authRoles.manager
+    role: authRoles.admin
   },
   {
     name: "Chat",
@@ -63,12 +63,12 @@ export const navigations = [
   {
     label: "Control Order",
     type: "label",
-    role: authRoles.staff
+    role: authRoles.staffmxmanager
   },
   {
     name: "Orders",
     icon: "listalt",
     path: "/shop/orders",
-    role: authRoles.staff
+    role: authRoles.staffmxmanager
   }
 ];

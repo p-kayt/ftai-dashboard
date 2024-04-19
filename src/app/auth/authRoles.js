@@ -1,5 +1,6 @@
 export const authRoles = {
-  staff: [2, 3, 4],
-  manager: [3, 4],
-  admin: [4]
+  staff: [2],
+  manager: [3],
+  admin: [4],
+  staffmxmanager: [2, 3]
 };
