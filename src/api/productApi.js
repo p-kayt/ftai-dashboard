@@ -23,3 +23,19 @@ export const updateProduct = async (props) => {
   const res = await instance.put("/api/product/" + id, data);
   return res.data;
 };
+export const getProductsFiltered = async (params) => {
+  // Construct the query string
+  let queryString = Object.keys(params)
+    .filter(
+      (key) =>
+        params[key] !== undefined &&
+        params[key] !== null &&
+        params[key] !== "" &&
+        params[key] !== "Tất cả"
+    )
+    .map((key) => `${key}=${encodeURIComponent(params[key])}`)
+    .join("&");
+
+  const response = await instance.get(`api/product/search?${queryString}`);
+  return response.data;
+};

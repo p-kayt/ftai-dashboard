@@ -16,10 +16,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { imageWithUrl } from "api/firebaseConfig";
 import { getAllBrands, getAllCategories, getAllColors, getAllSizes } from "api/othersApi";
-import { addNewProduct, deleteProductById, getAllProducts, updateProduct } from "api/productApi";
+import {
+  addNewProduct,
+  deleteProductById,
+  getAllProducts,
+  getProductsFiltered,
+  updateProduct
+} from "api/productApi";
 import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
 import React from "react";
+import { useEffect } from "react";
+import { useCallback } from "react";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -31,7 +39,7 @@ const Products = () => {
     isSuccess
   } = useQuery({
     queryKey: ["products"],
-    queryFn: getAllProducts
+    queryFn: () => getProductsFiltered(filterParams)
   });
 
   const cateQuery = useQuery({
@@ -90,9 +98,54 @@ const Products = () => {
     }
   });
 
+  // const productsQuery = useQuery({
+  //   queryKey: ["products"],
+  //   queryFn: () => getProductsFiltered(filterParams)
+  //   // refetchOnWindowFocus: true,
+  // });
+
   const [open, setOpen] = useState(false);
   const [func, setFunc] = useState(null);
   const [imagesFetched, setImagesFetched] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const [filterParams, setFilterParams] = useState({
+    name: null,
+    category: null,
+    subCategory: null,
+    color: null,
+    size: null,
+    minPrice: null,
+    maxPrice: null
+  });
+  const handleSearch = () => {
+    queryClient.invalidateQueries("products");
+  };
+
+  useEffect(() => {
+    if (searchValue?.length !== 0) {
+      setFilterParams((prevParams) => ({ ...prevParams, name: searchValue }));
+    } else {
+      setFilterParams({
+        name: null,
+        category: null,
+        subCategory: null,
+        color: null,
+        size: null,
+        minPrice: null,
+        maxPrice: null
+      });
+    }
+    // if (paramSearch) {
+    //   setFilterParams((prevParams) => ({ ...prevParams, name: paramSearch }));
+    // }
+    // if (cateParam) {
+    //   // console.log("cateParam", cateParam);
+    //   setFilterParams((prevParams) => ({ ...prevParams, category: cateParam }));
+    // }
+  }, [
+    searchValue
+    // paramSearch, cateParam
+  ]);
   const [product, setProduct] = useState({
     name: null,
     description: null,
@@ -173,7 +226,7 @@ const Products = () => {
   };
 
   const handleUpdate = (data) => {
-    // console.log("update", data);
+    console.log("update", data);
     updateMutation.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries("products");
@@ -316,9 +369,17 @@ const Products = () => {
 
   return (
     <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
-      <div style={{ margin: "10px 0px" }}>
+      <div
+        style={{
+          margin: "10px 0px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "10px"
+        }}
+      >
         <Button
-          style={{ marginBottom: "10px", backgroundColor: "#53609D" }}
+          style={{ backgroundColor: "#53609D", height: "40px" }}
           variant="contained"
           onClick={() => {
             setProduct(null);
@@ -328,7 +389,29 @@ const Products = () => {
         >
           Add new product
         </Button>
+
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          style={{ height: "40px", marginBottom: 0 }}
+          InputProps={{
+            style: { height: "40px", padding: "0 14px" }
+          }}
+          InputLabelProps={{
+            shrink: true
+          }}
+        />
+        <Button
+          variant="contained"
+          style={{ backgroundColor: "#53609D", height: "40px" }}
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
       </div>
+
       {isSuccess && (
         <DataGrid
           rows={products}
@@ -339,6 +422,7 @@ const Products = () => {
             }
           }}
           pageSizeOptions={[10, 20]}
+          style={{ minHeight: "500px" }}
         />
       )}
       {cateQuery.isSuccess &&
@@ -394,7 +478,7 @@ const Modal = ({
         edgeImage: values.edgeImage,
         categoryId: values.categoryId,
         brandId: values.brandId,
-        // properties: [],
+        properties: values.properties,
         images: values.images.map((item) => {
           return { url: item.url };
         }),
@@ -408,6 +492,7 @@ const Modal = ({
       delete obj1.brand;
       delete obj1.category;
       let result = Object.assign({}, obj1, values);
+      result.properties = values.properties;
       // replace variant
       result.productVariants = values.productVariants.map((variant) => {
         let size = sizes.find((size) => size.id === variant.sizeId);
@@ -449,7 +534,8 @@ const Modal = ({
         quantity: 1,
         price: 0
       }
-    ]
+    ],
+    properties: []
   };
 
   const [initData, setInitData] = useState();
@@ -465,7 +551,7 @@ const Modal = ({
         .then((newImages) => {
           // newImages is an array of image objects
           newImgs = [...newImages.flat()];
-          console.log("inside", initProduct);
+          // console.log("inside", initProduct);
           setInitData({
             ...createData,
             name: initProduct.name,
@@ -482,6 +568,7 @@ const Modal = ({
               quantity: variant.quantity,
               price: variant.price
             })),
+            properties: initProduct.properties,
             images: newImgs
           });
           console.log("initData", initData);
@@ -505,8 +592,10 @@ const Modal = ({
               quantity: variant.quantity,
               price: variant.price
             })),
+            properties: initProduct.properties,
             images: initProduct.images.map((image) => ({ url: image.imageUrl }))
           });
+          console.log("initData", initData);
           setImagesFetched(true);
         })
         .finally();
@@ -906,6 +995,92 @@ const Modal = ({
                       )}
                     </FieldArray>
                   </div>
+                </div>
+
+                <div>
+                  <InputLabel id="prop-label">Other property</InputLabel>
+                  <FieldArray name="properties">
+                    {({ push, remove }) => (
+                      <div>
+                        {values.properties.map((property, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "10px",
+                              margin: "10px 0"
+                            }}
+                          >
+                            <InputLabel id={`property-label-${index}`}>
+                              Property {index + 1}
+                            </InputLabel>
+                            <div>
+                              <InputLabel id={`name-label-${index}`}>Name</InputLabel>
+                              <TextField
+                                name={`properties[${index}].name`}
+                                variant="outlined"
+                                value={property.name}
+                                onChange={handleChange}
+                              />
+                            </div>
+                            <div>
+                              <InputLabel id={`value-label-${index}`}>Value</InputLabel>
+                              <TextField
+                                name={`properties[${index}].value`}
+                                variant="outlined"
+                                value={property.value}
+                                onChange={handleChange}
+                              />
+                            </div>
+                            <Button onClick={() => remove(index)}>Remove</Button>
+                          </div>
+                        ))}
+                        <Button onClick={() => push({ name: "", value: "" })}>Add Property</Button>
+                      </div>
+                    )}
+                  </FieldArray>
+                  {/* <FieldArray
+                    name="properties"
+                    render={(arrayHelpers) => (
+                      <div>
+                        {values.properties &&
+                          values.properties.map((property, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "10px",
+                                margin: "10px 0"
+                              }}
+                            >
+                              <InputLabel id={`prop-label-${index}`}>
+                                Propety {index + 1}
+                              </InputLabel>
+                              <TextField
+                                name={`properties.${index}.name`}
+                                label="Name"
+                                variant="outlined"
+                                value={property.name}
+                                onChange={handleChange}
+                              />
+                              <TextField
+                                name={`properties.${index}.value`}
+                                label="Value"
+                                variant="outlined"
+                                value={property.value}
+                                onChange={handleChange}
+                              />
+                              <Button onClick={() => arrayHelpers.remove(index)}>Remove</Button>
+                            </div>
+                          ))}
+                        <Button onClick={() => arrayHelpers.push({ name: "", value: "" })}>
+                          Add a property
+                        </Button>
+                      </div>
+                    )}
+                  /> */}
                 </div>
 
                 <div
