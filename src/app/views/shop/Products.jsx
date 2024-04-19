@@ -123,7 +123,7 @@ const Products = () => {
   };
 
   useEffect(() => {
-    if (searchValue?.length != 0) {
+    if (searchValue?.length !== 0) {
       setFilterParams((prevParams) => ({ ...prevParams, name: searchValue }));
     } else {
       setFilterParams({
@@ -227,7 +227,7 @@ const Products = () => {
   };
 
   const handleUpdate = (data) => {
-    // console.log("update", data);
+    console.log("update", data);
     updateMutation.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries("products");
@@ -479,7 +479,7 @@ const Modal = ({
         edgeImage: values.edgeImage,
         categoryId: values.categoryId,
         brandId: values.brandId,
-        // properties: [],
+        properties: values.properties,
         images: values.images.map((item) => {
           return { url: item.url };
         }),
@@ -493,6 +493,7 @@ const Modal = ({
       delete obj1.brand;
       delete obj1.category;
       let result = Object.assign({}, obj1, values);
+      result.properties = values.properties;
       // replace variant
       result.productVariants = values.productVariants.map((variant) => {
         let size = sizes.find((size) => size.id === variant.sizeId);
@@ -534,7 +535,8 @@ const Modal = ({
         quantity: 1,
         price: 0
       }
-    ]
+    ],
+    properties: []
   };
 
   const [initData, setInitData] = useState();
@@ -550,7 +552,7 @@ const Modal = ({
         .then((newImages) => {
           // newImages is an array of image objects
           newImgs = [...newImages.flat()];
-          console.log("inside", initProduct);
+          // console.log("inside", initProduct);
           setInitData({
             ...createData,
             name: initProduct.name,
@@ -567,6 +569,7 @@ const Modal = ({
               quantity: variant.quantity,
               price: variant.price
             })),
+            properties: initProduct.properties,
             images: newImgs
           });
           console.log("initData", initData);
@@ -590,8 +593,10 @@ const Modal = ({
               quantity: variant.quantity,
               price: variant.price
             })),
+            properties: initProduct.properties,
             images: initProduct.images.map((image) => ({ url: image.imageUrl }))
           });
+          console.log("initData", initData);
           setImagesFetched(true);
         })
         .finally();
@@ -991,6 +996,92 @@ const Modal = ({
                       )}
                     </FieldArray>
                   </div>
+                </div>
+
+                <div>
+                  <InputLabel id="prop-label">Other property</InputLabel>
+                  <FieldArray name="properties">
+                    {({ push, remove }) => (
+                      <div>
+                        {values.properties.map((property, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              gap: "10px",
+                              margin: "10px 0"
+                            }}
+                          >
+                            <InputLabel id={`property-label-${index}`}>
+                              Property {index + 1}
+                            </InputLabel>
+                            <div>
+                              <InputLabel id={`name-label-${index}`}>Name</InputLabel>
+                              <TextField
+                                name={`properties[${index}].name`}
+                                variant="outlined"
+                                value={property.name}
+                                onChange={handleChange}
+                              />
+                            </div>
+                            <div>
+                              <InputLabel id={`value-label-${index}`}>Value</InputLabel>
+                              <TextField
+                                name={`properties[${index}].value`}
+                                variant="outlined"
+                                value={property.value}
+                                onChange={handleChange}
+                              />
+                            </div>
+                            <Button onClick={() => remove(index)}>Remove</Button>
+                          </div>
+                        ))}
+                        <Button onClick={() => push({ name: "", value: "" })}>Add Property</Button>
+                      </div>
+                    )}
+                  </FieldArray>
+                  {/* <FieldArray
+                    name="properties"
+                    render={(arrayHelpers) => (
+                      <div>
+                        {values.properties &&
+                          values.properties.map((property, index) => (
+                            <div
+                              key={index}
+                              style={{
+                                display: "flex",
+                                flexDirection: "row",
+                                gap: "10px",
+                                margin: "10px 0"
+                              }}
+                            >
+                              <InputLabel id={`prop-label-${index}`}>
+                                Propety {index + 1}
+                              </InputLabel>
+                              <TextField
+                                name={`properties.${index}.name`}
+                                label="Name"
+                                variant="outlined"
+                                value={property.name}
+                                onChange={handleChange}
+                              />
+                              <TextField
+                                name={`properties.${index}.value`}
+                                label="Value"
+                                variant="outlined"
+                                value={property.value}
+                                onChange={handleChange}
+                              />
+                              <Button onClick={() => arrayHelpers.remove(index)}>Remove</Button>
+                            </div>
+                          ))}
+                        <Button onClick={() => arrayHelpers.push({ name: "", value: "" })}>
+                          Add a property
+                        </Button>
+                      </div>
+                    )}
+                  /> */}
                 </div>
 
                 <div

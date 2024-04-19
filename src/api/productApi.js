@@ -25,8 +25,6 @@ export const updateProduct = async (props) => {
 };
 export const getProductsFiltered = async (params) => {
   // Construct the query string
-  console.log("api ==== ", params);
-
   let queryString = Object.keys(params)
     .filter(
       (key) =>
@@ -37,8 +35,6 @@ export const getProductsFiltered = async (params) => {
     )
     .map((key) => `${key}=${encodeURIComponent(params[key])}`)
     .join("&");
-
-  console.log(`api/product/search?${queryString}`);
 
   const response = await instance.get(`api/product/search?${queryString}`);
   return response.data;
