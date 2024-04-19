@@ -10,7 +10,6 @@ const Brand = (props) => {
   const queryClient = useQueryClient();
   const {
     data: brands,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["brands"],
@@ -23,7 +22,7 @@ const Brand = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -132,7 +131,7 @@ const Brand = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

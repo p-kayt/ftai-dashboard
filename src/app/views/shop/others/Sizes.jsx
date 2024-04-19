@@ -11,7 +11,6 @@ const Sizes = (props) => {
 
   const {
     data: sizes,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["sizes"],
@@ -24,7 +23,7 @@ const Sizes = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -132,7 +131,7 @@ const Sizes = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

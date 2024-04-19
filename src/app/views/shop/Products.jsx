@@ -28,7 +28,6 @@ const Products = () => {
   const queryClient = useQueryClient();
   const {
     data: products,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["products"],

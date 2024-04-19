@@ -30,8 +30,8 @@ const styles = {
         justifyContent: 'space-between',
     },
     productImageContainer: {
-        width: '50px',
-        height: '50px',
+        width: '62px',
+        height: '62px',
         overflow: 'hidden',
     },
     productImage: {
@@ -84,6 +84,7 @@ const styles = {
 };
 
 export default function OrderItemRender({ order }) {
+    // console.log(order.orderItems)
     return (
         <div style={styles.container}>
             <div style={styles.header}>
@@ -91,7 +92,6 @@ export default function OrderItemRender({ order }) {
                     Products Ordered
                 </div>
             </div>
-
             {order.orderItems.map((data) => (
                 <div key={data.product.id} style={styles.productContainer}>
                     <div style={styles.productDetails}>
@@ -103,6 +103,9 @@ export default function OrderItemRender({ order }) {
                             <div style={styles.productInfo}>
                                 <div style={styles.productSizeColor}>Size: {data.size}</div>
                                 <div style={{ ...styles.colorIndicator, backgroundColor: `${data.color}` }}></div>
+                            </div>
+                            <div style={styles.productInfo}>
+                                <div style={styles.productSizeColor}>SKU: {data.sku}</div>
                             </div>
                         </div>
                     </div>
