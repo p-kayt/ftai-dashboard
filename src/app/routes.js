@@ -45,9 +45,8 @@ const routes = [
       { path: "/shop/orders", element: <Orders />, auth: authRoles.admin },
       { path: "/shop/orders/:orderId", element: <OrderDetail />, auth: authRoles.admin },
       { path: "/shop/others", element: <Others />, auth: authRoles.admin },
-
       // e-chart route
-      { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.editor }
+      { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.admin }
     ]
   },
 

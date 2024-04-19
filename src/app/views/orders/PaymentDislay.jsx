@@ -39,6 +39,7 @@ export const processStatusPaymentColor = (number) => {
 
 export default function PaymentDislay({ order, refetch }) {
     const baseCharge = order.orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    console.log(order)
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
     const formatDate = (date) => moment(date).format("DD-MM-YYYY");
