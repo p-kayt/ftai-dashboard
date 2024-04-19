@@ -11,7 +11,6 @@ const Promotion = (props) => {
 
   const {
     data: promos,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["promos"],
@@ -25,7 +24,7 @@ const Promotion = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("promotions");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -155,7 +154,7 @@ const Promotion = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

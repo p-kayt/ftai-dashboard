@@ -2,10 +2,21 @@ import { authRoles } from "./auth/authRoles";
 
 export const navigations = [
   {
+    label: "Admin",
+    type: "label",
+    role: authRoles.admin
+  },
+  {
     name: "Dashboard",
     path: "/dashboard/default",
     icon: "dashboard",
     role: authRoles.staff
+  },
+  {
+    name: "Charts",
+    icon: "chart",
+    path: "/charts/echarts",
+    role: authRoles.admin
   },
   {
     label: "Store",
@@ -60,15 +71,4 @@ export const navigations = [
     path: "/shop/orders",
     role: authRoles.staff
   }
-  // {
-  //   label: "Simulation",
-  //   type: "label",
-  //   role: authRoles.admin
-  // },
-  // {
-  //   name: "Shipping",
-  //   icon: "car",
-  //   path: "/",
-  //   role: authRoles.admin
-  // }
 ];

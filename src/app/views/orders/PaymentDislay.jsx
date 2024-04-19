@@ -39,6 +39,7 @@ export const processStatusPaymentColor = (number) => {
 
 export default function PaymentDislay({ order, refetch }) {
     const baseCharge = order.orderItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    console.log(order)
     const [loading, setLoading] = useState(false)
     const [loading2, setLoading2] = useState(false)
     const formatDate = (date) => moment(date).format("DD-MM-YYYY");
@@ -159,14 +160,16 @@ export default function PaymentDislay({ order, refetch }) {
                             <div style={styles.chargeAmount}>{order.payment.paymentMethod.name}</div>
                         </div>
                     </div>
-                    <div style={styles.chargeRow}>
-                        <div style={styles.chargeLabel}>Transaction id</div>
-                        <div style={styles.date}>{order.payment.transactionId}</div>
-                    </div>
-                    <div style={styles.chargeRow}>
-                        <div style={styles.chargeLabel}>Transaction date</div>
-                        <div style={styles.date}>{formatDate(order.payment.transactionDate)}</div>
-                    </div>
+                    {order.payment.paymentMethod.name === 'Zalopay' && <>
+                        <div style={styles.chargeRow}>
+                            <div style={styles.chargeLabel}>Transaction id</div>
+                            <div style={styles.date}>{order.payment.transactionId}</div>
+                        </div>
+                        <div style={styles.chargeRow}>
+                            <div style={styles.chargeLabel}>Transaction date</div>
+                            <div style={styles.date}>{formatDate(order.payment.transactionDate)}</div>
+                        </div>
+                    </>}
                     <div style={styles.textCharge}>Charge</div>
                     <div style={styles.charges}>
                         <div style={styles.chargeRow}>
