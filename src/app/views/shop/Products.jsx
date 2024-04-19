@@ -16,10 +16,18 @@ import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { imageWithUrl } from "api/firebaseConfig";
 import { getAllBrands, getAllCategories, getAllColors, getAllSizes } from "api/othersApi";
-import { addNewProduct, deleteProductById, getAllProducts, updateProduct } from "api/productApi";
+import {
+  addNewProduct,
+  deleteProductById,
+  getAllProducts,
+  getProductsFiltered,
+  updateProduct
+} from "api/productApi";
 import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
 import React from "react";
+import { useEffect } from "react";
+import { useCallback } from "react";
 import { useState } from "react";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -32,7 +40,7 @@ const Products = () => {
     isSuccess
   } = useQuery({
     queryKey: ["products"],
-    queryFn: getAllProducts
+    queryFn: () => getProductsFiltered(filterParams)
   });
 
   const cateQuery = useQuery({
@@ -91,9 +99,54 @@ const Products = () => {
     }
   });
 
+  // const productsQuery = useQuery({
+  //   queryKey: ["products"],
+  //   queryFn: () => getProductsFiltered(filterParams)
+  //   // refetchOnWindowFocus: true,
+  // });
+
   const [open, setOpen] = useState(false);
   const [func, setFunc] = useState(null);
   const [imagesFetched, setImagesFetched] = useState(true);
+  const [searchValue, setSearchValue] = useState("");
+  const [filterParams, setFilterParams] = useState({
+    name: null,
+    category: null,
+    subCategory: null,
+    color: null,
+    size: null,
+    minPrice: null,
+    maxPrice: null
+  });
+  const handleSearch = () => {
+    queryClient.invalidateQueries("products");
+  };
+
+  useEffect(() => {
+    if (searchValue?.length != 0) {
+      setFilterParams((prevParams) => ({ ...prevParams, name: searchValue }));
+    } else {
+      setFilterParams({
+        name: null,
+        category: null,
+        subCategory: null,
+        color: null,
+        size: null,
+        minPrice: null,
+        maxPrice: null
+      });
+    }
+    // if (paramSearch) {
+    //   setFilterParams((prevParams) => ({ ...prevParams, name: paramSearch }));
+    // }
+    // if (cateParam) {
+    //   // console.log("cateParam", cateParam);
+    //   setFilterParams((prevParams) => ({ ...prevParams, category: cateParam }));
+    // }
+  }, [
+    searchValue
+    // paramSearch, cateParam
+  ]);
   const [product, setProduct] = useState({
     name: null,
     description: null,
@@ -317,9 +370,17 @@ const Products = () => {
 
   return (
     <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
-      <div style={{ margin: "10px 0px" }}>
+      <div
+        style={{
+          margin: "10px 0px",
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          gap: "10px"
+        }}
+      >
         <Button
-          style={{ marginBottom: "10px", backgroundColor: "#53609D" }}
+          style={{ backgroundColor: "#53609D", height: "40px" }}
           variant="contained"
           onClick={() => {
             setProduct(null);
@@ -329,7 +390,29 @@ const Products = () => {
         >
           Add new product
         </Button>
+
+        <TextField
+          label="Search"
+          variant="outlined"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          style={{ height: "40px", marginBottom: 0 }}
+          InputProps={{
+            style: { height: "40px", padding: "0 14px" }
+          }}
+          InputLabelProps={{
+            shrink: true
+          }}
+        />
+        <Button
+          variant="contained"
+          style={{ backgroundColor: "#53609D", height: "40px" }}
+          onClick={handleSearch}
+        >
+          Search
+        </Button>
       </div>
+
       {isSuccess && (
         <DataGrid
           rows={products}
@@ -340,6 +423,7 @@ const Products = () => {
             }
           }}
           pageSizeOptions={[10, 20]}
+          style={{ minHeight: "500px" }}
         />
       )}
       {cateQuery.isSuccess &&
