@@ -9,10 +9,7 @@ const Promotion = (props) => {
   const { setModalOpen, setInit, setActionType } = props;
   const queryClient = useQueryClient();
 
-  const {
-    data: promos,
-    isSuccess
-  } = useQuery({
+  const { data: promos, isSuccess } = useQuery({
     queryKey: ["promos"],
     queryFn: getAllPromotions
   });
@@ -24,7 +21,7 @@ const Promotion = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("promotions");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const handleEdit = (id) => {
@@ -145,7 +142,7 @@ const Promotion = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
-          rows={promos.data}
+          rows={promos.data.filter((item) => !item.isDeleted)}
           columns={columns}
           initialState={{
             pagination: {
@@ -154,7 +151,7 @@ const Promotion = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-        // checkboxSelection
+          // checkboxSelection
         />
       )}
     </div>

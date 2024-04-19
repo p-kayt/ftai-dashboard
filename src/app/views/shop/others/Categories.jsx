@@ -8,10 +8,7 @@ import React from "react";
 const Categories = (props) => {
   const { setModalOpen, setInit, setActionType } = props;
   const queryClient = useQueryClient();
-  const {
-    data: categories,
-    isSuccess
-  } = useQuery({
+  const { data: categories, isSuccess } = useQuery({
     queryKey: ["categories"],
     queryFn: getAllCategories
   });
@@ -25,7 +22,7 @@ const Categories = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
   const handleEdit = (id) => {
     const data = categories.data.find((item) => item.id === id);
@@ -125,7 +122,7 @@ const Categories = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
-          rows={categories.data}
+          rows={categories.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
             pagination: {
@@ -134,7 +131,7 @@ const Categories = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-        // checkboxSelection
+          // checkboxSelection
         />
       )}
     </div>
