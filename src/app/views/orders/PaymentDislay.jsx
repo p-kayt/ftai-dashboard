@@ -159,14 +159,16 @@ export default function PaymentDislay({ order, refetch }) {
                             <div style={styles.chargeAmount}>{order.payment.paymentMethod.name}</div>
                         </div>
                     </div>
-                    <div style={styles.chargeRow}>
-                        <div style={styles.chargeLabel}>Transaction id</div>
-                        <div style={styles.date}>{order.payment.transactionId}</div>
-                    </div>
-                    <div style={styles.chargeRow}>
-                        <div style={styles.chargeLabel}>Transaction date</div>
-                        <div style={styles.date}>{formatDate(order.payment.transactionDate)}</div>
-                    </div>
+                    {order.payment.paymentMethod.name === 'Zalopay' && <>
+                        <div style={styles.chargeRow}>
+                            <div style={styles.chargeLabel}>Transaction id</div>
+                            <div style={styles.date}>{order.payment.transactionId}</div>
+                        </div>
+                        <div style={styles.chargeRow}>
+                            <div style={styles.chargeLabel}>Transaction date</div>
+                            <div style={styles.date}>{formatDate(order.payment.transactionDate)}</div>
+                        </div>
+                    </>}
                     <div style={styles.textCharge}>Charge</div>
                     <div style={styles.charges}>
                         <div style={styles.chargeRow}>

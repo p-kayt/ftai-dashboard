@@ -9,7 +9,6 @@ const Colors = (props) => {
   const queryClient = useQueryClient();
   const {
     data: colors,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["colors"],
@@ -22,7 +21,7 @@ const Colors = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("colors");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const handleEdit = (id) => {
     const data = colors.data.find((item) => item.id === id);
@@ -135,7 +134,7 @@ const Colors = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

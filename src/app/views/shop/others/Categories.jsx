@@ -10,7 +10,6 @@ const Categories = (props) => {
   const queryClient = useQueryClient();
   const {
     data: categories,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["categories"],
@@ -26,7 +25,7 @@ const Categories = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const handleEdit = (id) => {
     const data = categories.data.find((item) => item.id === id);
@@ -135,7 +134,7 @@ const Categories = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>
