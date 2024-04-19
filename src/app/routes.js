@@ -15,6 +15,7 @@ import Others from "./views/shop/Others";
 import Orders from "./views/orders/Orders";
 import OrderDetail from "./views/orders/OrderDetail";
 import ChatCustomer from "./views/users/ChatCustomer";
+import SihippingSim from "./views/shop/SihippingSim";
 
 // SESSION PAGES
 const NotFound = Loadable(lazy(() => import("app/views/sessions/NotFound")));
@@ -44,6 +45,7 @@ const routes = [
       { path: "/shop/orders", element: <Orders />, auth: authRoles.admin },
       { path: "/shop/orders/:orderId", element: <OrderDetail />, auth: authRoles.admin },
       { path: "/shop/others", element: <Others />, auth: authRoles.admin },
+      { path: "/shipping", element: <SihippingSim />, auth: authRoles.admin },
 
       // e-chart route
       { path: "/charts/echarts", element: <AppEchart />, auth: authRoles.editor }

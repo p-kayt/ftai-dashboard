@@ -59,16 +59,16 @@ export const navigations = [
     icon: "listalt",
     path: "/shop/orders",
     role: authRoles.staff
-  },
-  {
-    label: "Simulation",
-    type: "label",
-    role: authRoles.admin
-  },
-  {
-    name: "Shipping",
-    icon: "car",
-    path: "/",
-    role: authRoles.admin
   }
+  // {
+  //   label: "Simulation",
+  //   type: "label",
+  //   role: authRoles.admin
+  // },
+  // {
+  //   name: "Shipping",
+  //   icon: "car",
+  //   path: "/",
+  //   role: authRoles.admin
+  // }
 ];
