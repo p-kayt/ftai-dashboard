@@ -69,7 +69,7 @@ export default function AppEchart() {
     <Container>
       <Box sx={{ py: "12px" }} />
 
-      <SimpleCard title="Sale Trend (orders/day)">
+      <SimpleCard title="Sale Trend (orders/dayofweek)">
         {trendQueryCurrentMonth.isSuccess && trendQueryPreviousMonth.isSuccess && (
           <LineChart
             height="350px"

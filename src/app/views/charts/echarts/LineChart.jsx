@@ -94,8 +94,14 @@ export default function LineChart({ height, color = [], currMonth, prevMonth, ty
     return monthNames[monthNumber - 1]; // subtract 1 because array indices start at 0
   }
   if (type === "user") {
+    currMonth.sort((a, b) => {
+      if ((b.month % 12) + 1 == a.month) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
     option.xAxis.data = currMonth.map((item) => getMonthName(item.month));
-
     option.series = [
       ...option.series,
       {
