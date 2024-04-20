@@ -44,7 +44,7 @@ export default function LineChart({ height, color = [], currMonth, prevMonth, ty
   };
   if (type === "trend") {
     option.xAxis.data = currMonth.map((item) => item.date);
-    (option.yAxis = {
+    option.yAxis = {
       type: "value",
       axisLine: { show: false },
       axisTick: { show: false },
@@ -53,28 +53,28 @@ export default function LineChart({ height, color = [], currMonth, prevMonth, ty
       },
       axisLabel: { color: theme.palette.text.secondary, fontSize: 13, fontFamily: "roboto" },
       minInterval: 1
-    }),
-      (option.series = [
-        ...option.series,
-        {
-          data: currMonth.map((item) => item.totalOrder),
-          type: "line",
-          stack: "This month",
-          name: "This month",
-          smooth: true,
-          symbolSize: 4,
-          lineStyle: { width: 4 }
-        },
-        {
-          data: prevMonth.map((item) => item.totalRevenue),
-          type: "line",
-          stack: "Last month",
-          name: "Last month",
-          smooth: true,
-          symbolSize: 4,
-          lineStyle: { width: 4 }
-        }
-      ]);
+    };
+    option.series = [
+      ...option.series,
+      {
+        data: currMonth.map((item) => item.totalOrder),
+        type: "line",
+        stack: "This month",
+        name: "This month",
+        smooth: true,
+        symbolSize: 4,
+        lineStyle: { width: 4 }
+      },
+      {
+        data: prevMonth.map((item) => item.totalRevenue),
+        type: "line",
+        stack: "Last month",
+        name: "Last month",
+        smooth: true,
+        symbolSize: 4,
+        lineStyle: { width: 4 }
+      }
+    ];
   }
   function getMonthName(monthNumber) {
     const monthNames = [
@@ -95,7 +95,7 @@ export default function LineChart({ height, color = [], currMonth, prevMonth, ty
   }
   if (type === "user") {
     currMonth.sort((a, b) => {
-      if ((b.month % 12) + 1 == a.month) {
+      if ((b.month % 12) + 1 === a.month) {
         return 1;
       } else {
         return -1;

@@ -1,11 +1,7 @@
 import { Box, styled, useTheme } from "@mui/material";
-
-import Breadcrumb from "app/components/Breadcrumb";
 import SimpleCard from "app/components/SimpleCard";
-
-import AreaChart from "./AreaChart";
 import LineChart from "./LineChart";
-import DoughnutChart from "./Doughnut";
+
 import ComparisonChart from "./ComparisonChart";
 import { useQuery } from "@tanstack/react-query";
 import { getNewUserByMonth, getRevByMonth, getSaleTrend } from "api/dashboardApi";

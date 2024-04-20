@@ -4,7 +4,7 @@ import ReactEcharts from "echarts-for-react";
 export default function ComparisonChart({ height, color = [], data }) {
   const theme = useTheme();
   data.sort((a, b) => {
-    if ((b.month % 12) + 1 == a.month) {
+    if ((b.month % 12) + 1 === a.month) {
       return 1;
     } else {
       return -1;
