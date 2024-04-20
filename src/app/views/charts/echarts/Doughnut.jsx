@@ -4,7 +4,7 @@ import ReactEcharts from "echarts-for-react";
 export default function DoughnutChart({ height, color = [] }) {
   const theme = useTheme();
 
-  const option = {
+  let option = {
     legend: {
       show: true,
       itemGap: 20,
