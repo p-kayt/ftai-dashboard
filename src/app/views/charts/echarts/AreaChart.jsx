@@ -1,6 +1,6 @@
 import ReactEcharts from "echarts-for-react";
 
-const option = {
+let option = {
   grid: { left: 0, top: 0, right: 0, bottom: 0 },
   xAxis: { show: false, type: "category", showGrid: false, boundaryGap: false },
   yAxis: { show: false, type: "value", splitLine: { show: false } },

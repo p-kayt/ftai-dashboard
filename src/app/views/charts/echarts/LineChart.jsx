@@ -1,10 +1,10 @@
 import { useTheme } from "@mui/material/styles";
 import ReactEcharts from "echarts-for-react";
 
-export default function LineChart({ height, color = [] }) {
+export default function LineChart({ height, color = [], currMonth, prevMonth, type }) {
   const theme = useTheme();
-
-  const option = {
+  console.log({ currMonth, prevMonth });
+  let option = {
     grid: { top: "10%", bottom: "10%", left: "5%", right: "5%" },
     legend: {
       itemGap: 20,
@@ -22,7 +22,7 @@ export default function LineChart({ height, color = [] }) {
     },
     xAxis: {
       type: "category",
-      data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+      data: [],
       axisLine: { show: false },
       axisTick: { show: false },
       axisLabel: {
@@ -40,9 +40,24 @@ export default function LineChart({ height, color = [] }) {
       },
       axisLabel: { color: theme.palette.text.secondary, fontSize: 13, fontFamily: "roboto" }
     },
-    series: [
+    series: []
+  };
+  if (type === "trend") {
+    option.xAxis.data = currMonth.map((item) => item.date);
+    option.yAxis = {
+      type: "value",
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: {
+        lineStyle: { color: theme.palette.text.secondary, opacity: 0.15 }
+      },
+      axisLabel: { color: theme.palette.text.secondary, fontSize: 13, fontFamily: "roboto" },
+      minInterval: 1
+    };
+    option.series = [
+      ...option.series,
       {
-        data: [30, 40, 20, 50, 40, 80, 90],
+        data: currMonth.map((item) => item.totalOrder),
         type: "line",
         stack: "This month",
         name: "This month",
@@ -51,7 +66,7 @@ export default function LineChart({ height, color = [] }) {
         lineStyle: { width: 4 }
       },
       {
-        data: [20, 50, 15, 50, 30, 70, 95],
+        data: prevMonth.map((item) => item.totalRevenue),
         type: "line",
         stack: "Last month",
         name: "Last month",
@@ -59,8 +74,46 @@ export default function LineChart({ height, color = [] }) {
         symbolSize: 4,
         lineStyle: { width: 4 }
       }
-    ]
-  };
-
+    ];
+  }
+  function getMonthName(monthNumber) {
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ];
+    return monthNames[monthNumber - 1]; // subtract 1 because array indices start at 0
+  }
+  if (type === "user") {
+    currMonth.sort((a, b) => {
+      if ((b.month % 12) + 1 === a.month) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+    option.xAxis.data = currMonth.map((item) => getMonthName(item.month));
+    option.series = [
+      ...option.series,
+      {
+        data: currMonth.map((item) => item.totalNewUser),
+        type: "line",
+        stack: "This month",
+        name: "This month",
+        smooth: true,
+        symbolSize: 4,
+        lineStyle: { width: 4 }
+      }
+    ];
+  }
   return <ReactEcharts style={{ height: height }} option={{ ...option, color: [...color] }} />;
 }
