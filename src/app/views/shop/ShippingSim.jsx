@@ -1,12 +1,12 @@
-import { Box } from '@mui/material';
-import Button from '@mui/material/Button';
-import Chip from '@mui/material/Chip';
-import { DataGrid } from '@mui/x-data-grid';
+import { Box } from "@mui/material";
+import Button from "@mui/material/Button";
+import Chip from "@mui/material/Chip";
+import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { acceptOrderbyIdnStatus, cancelOrderbyIdnStatus, getAllOrders } from 'api/orderApi';
-import Loading from 'app/components/MatxLoading';
-import { dateConvert, transNumberFormatter } from 'app/utils/utils';
-import Swal from 'sweetalert2';
+import { acceptOrderbyIdnStatus, cancelOrderbyIdnStatus, getAllOrders } from "api/orderApi";
+import Loading from "app/components/MatxLoading";
+import { dateConvert, transNumberFormatter } from "app/utils/utils";
+import Swal from "sweetalert2";
 
 export const processNumber = (number) => {
   switch (number) {
@@ -17,7 +17,7 @@ export const processNumber = (number) => {
     default:
       return "Unknow Status";
   }
-}
+};
 export const processNumberColor = (number) => {
   switch (number) {
     case 5:
@@ -27,8 +27,8 @@ export const processNumberColor = (number) => {
     default:
       return "default";
   }
-}
-export default function SihippingSim() {
+};
+export default function ShippingSim() {
   const {
     data: orders,
     isSuccess,
@@ -37,16 +37,16 @@ export default function SihippingSim() {
     queryKey: ["orders"],
     queryFn: getAllOrders
   });
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const acceptOrder = useMutation({
     mutationKey: ["acceptorder"],
     mutationFn: (data) => acceptOrderbyIdnStatus(data),
     onSuccess: (res) => {
-      queryClient.invalidateQueries(['acceptorder'])
+      queryClient.invalidateQueries(["acceptorder"]);
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
     }
   });
 
@@ -54,11 +54,10 @@ export default function SihippingSim() {
     mutationKey: ["cancelorder"],
     mutationFn: (data) => cancelOrderbyIdnStatus(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['cancelorder'])
-
+      queryClient.invalidateQueries(["cancelorder"]);
     },
     onError: (error) => {
-      console.log(error)
+      console.log(error);
     }
   });
   const handleDelivered = async (id) => {
@@ -75,11 +74,11 @@ export default function SihippingSim() {
         const data = {
           orderId: id,
           status: 6
-        }
+        };
         acceptOrder.mutate(data);
       }
     });
-  }
+  };
   const handleCancelled = async (id) => {
     const { value: text } = await Swal.fire({
       input: "textarea",
@@ -110,13 +109,12 @@ export default function SihippingSim() {
             orderId: id,
             status: 3,
             cancelReason: text
-          }
+          };
           rejectOrder.mutate(data);
         }
-      })
+      });
     }
-  }
-
+  };
 
   const columns = [
     {
@@ -127,7 +125,7 @@ export default function SihippingSim() {
     {
       field: "recipientName",
       headerName: "Name",
-      width: 180,
+      width: 180
     },
     {
       field: "recipientPhone",
@@ -139,11 +137,8 @@ export default function SihippingSim() {
       headerName: "Total Order",
       width: 150,
       renderCell: (params) => (
-
         <strong>
-          <div style={{ margin: "0 auto" }}>
-            {transNumberFormatter(params.row.totalAmount)}đ
-          </div>
+          <div style={{ margin: "0 auto" }}>{transNumberFormatter(params.row.totalAmount)}đ</div>
         </strong>
       )
     },
@@ -159,10 +154,14 @@ export default function SihippingSim() {
       width: 200,
       renderCell: (params) => (
         <div style={{ margin: "0 auto" }}>
-          <Chip style={{
-            fontFamily: 'Poppins',
-            fontWeight: 600,
-          }} label={processNumber(params.row.status)} color={processNumberColor(params.row.status)} />
+          <Chip
+            style={{
+              fontFamily: "Poppins",
+              fontWeight: 600
+            }}
+            label={processNumber(params.row.status)}
+            color={processNumberColor(params.row.status)}
+          />
         </div>
       )
     },
@@ -172,14 +171,12 @@ export default function SihippingSim() {
       headerAlign: "center",
       width: 200,
       renderCell: (params) => (
-        <div style={{ margin: "0 auto", textAlign: 'center' }}>
+        <div style={{ margin: "0 auto", textAlign: "center" }}>
           {dateConvert(params.row.createAt)}
         </div>
       )
     }
-  ]
-
-
+  ];
 
   const shouldRenderOptions = orders?.data?.filter((order) => order.status === 5);
   if (shouldRenderOptions?.length > 0) {
@@ -189,61 +186,99 @@ export default function SihippingSim() {
       headerAlign: "center",
       width: 500,
       renderCell: (params) => (
-        <div style={{ margin: "0 auto", display: 'flex', flexDirection: 'row', gap: '10px', alignItems: 'center', justifyContent: 'center' }}>
-          <Button variant="outlined" onClick={() => handleDelivered(params.row.id)}>Confirm delivered</Button>
-          <Button variant="outlined" color='error' onClick={() => handleCancelled(params.row.id)}>Cancel delivered</Button>
+        <div
+          style={{
+            margin: "0 auto",
+            display: "flex",
+            flexDirection: "row",
+            gap: "10px",
+            alignItems: "center",
+            justifyContent: "center"
+          }}
+        >
+          <Button variant="outlined" onClick={() => handleDelivered(params.row.id)}>
+            Confirm delivered
+          </Button>
+          <Button variant="outlined" color="error" onClick={() => handleCancelled(params.row.id)}>
+            Cancel delivered
+          </Button>
         </div>
       )
     });
   }
 
   if (isFetching) {
-    return <Loading />
+    return <Loading />;
   }
 
-
   const orderStatusCounts = [
-    { title: 'Delivering Orders', count: orders?.data?.filter((order) => order.status === 5).length || 0 },
-    { title: 'Completed Orders', count: orders?.data?.filter((order) => order.status === 2).length || 0 },
+    {
+      title: "Delivering Orders",
+      count: orders?.data?.filter((order) => order.status === 5).length || 0
+    },
+    {
+      title: "Completed Orders",
+      count: orders?.data?.filter((order) => order.status === 2).length || 0
+    }
   ];
   const OrderStatusCard = ({ title, count, icon }) => (
     <Box
       sx={{
-        width: '150px',
-        borderRadius: '5px',
-        border: '1px solid #E0E0E0',
-        display: 'flex',
-        flexDirection: 'row',
-        height: '80px',
-        alignItems: 'center',
-        padding: '10px',
-        gap: '10px',
+        width: "150px",
+        borderRadius: "5px",
+        border: "1px solid #E0E0E0",
+        display: "flex",
+        flexDirection: "row",
+        height: "80px",
+        alignItems: "center",
+        padding: "10px",
+        gap: "10px"
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <div style={{ fontSize: '12px', fontFamily: 'Poppins', fontWeight: 500, color: '#9BA4B5' }}>{title}</div>
-        <div style={{ fontSize: '20px', fontFamily: 'Poppins', fontWeight: 700, color: title === 'Cancelled Orders' ? 'red' : 'inherit' }}>{count}</div>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <div style={{ fontSize: "12px", fontFamily: "Poppins", fontWeight: 500, color: "#9BA4B5" }}>
+          {title}
+        </div>
+        <div
+          style={{
+            fontSize: "20px",
+            fontFamily: "Poppins",
+            fontWeight: 700,
+            color: title === "Cancelled Orders" ? "red" : "inherit"
+          }}
+        >
+          {count}
+        </div>
       </div>
     </Box>
   );
   return (
     <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row', gap: '20px', marginBottom: '20px' }}>
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          gap: "20px",
+          marginBottom: "20px"
+        }}
+      >
         {orderStatusCounts.map((status) => (
           <OrderStatusCard key={status.title} {...status} />
         ))}
       </Box>
-      {isSuccess && <DataGrid
-        rows={orders?.data?.filter((order) => order.status === 5 || order.status === 2)}
-        columns={columns}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 10 }
-          }
-        }}
-        pageSizeOptions={[10, 20]}
-      />}
-
+      {isSuccess && (
+        <DataGrid
+          rows={orders?.data?.filter((order) => order.status === 5 || order.status === 2)}
+          columns={columns}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 0, pageSize: 10 }
+            }
+          }}
+          pageSizeOptions={[10, 20]}
+        />
+      )}
     </div>
-  )
+  );
 }

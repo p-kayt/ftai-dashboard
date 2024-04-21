@@ -15,7 +15,7 @@ import Others from "./views/shop/Others";
 import Orders from "./views/orders/Orders";
 import OrderDetail from "./views/orders/OrderDetail";
 import ChatCustomer from "./views/users/ChatCustomer";
-import SihippingSim from "./views/shop/SihippingSim";
+import ShippingSim from "./views/shop/ShippingSim";
 
 // SESSION PAGES
 const NotFound = Loadable(lazy(() => import("app/views/sessions/NotFound")));
@@ -55,7 +55,7 @@ const routes = [
   { path: "/session/signin", element: <JwtLogin /> },
   { path: "/session/signup", element: <JwtRegister /> },
   { path: "/session/forgot-password", element: <ForgotPassword /> },
-  { path: "/shipping", element: <SihippingSim /> },
+  { path: "/shipping", element: <ShippingSim /> },
   { path: "/", element: <Navigate to="dashboard/default" /> },
 
   { path: "*", element: <NotFound /> }
