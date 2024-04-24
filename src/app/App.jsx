@@ -15,6 +15,8 @@ const queryClient = new QueryClient();
 export default function App() {
   const content = useRoutes(routes);
 
+  // some change
+
   return (
     <SettingsProvider>
       <QueryClientProvider client={queryClient}>
