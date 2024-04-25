@@ -13,7 +13,7 @@ export const navigations = [
     role: authRoles.manager
   },
   {
-    name: "Charts",
+    name: "Statistics Charts",
     icon: "chart",
     path: "/charts/echarts",
     role: authRoles.manager
