@@ -44,7 +44,7 @@ export default function Analytics() {
           {/* <Grid item lg={6} md={8} sm={12} xs={12}> */}
           <StatCards />
           <TopSellingTable />
-          <StatCards2 />
+          {/* <StatCards2 /> */}
           {/* <H4>Ongoing Projects</H4>
             <RowCards /> */}
           {/* </Grid> */}
