@@ -10,7 +10,8 @@ import {
   Paper,
   Select,
   TextField,
-  CircularProgress
+  CircularProgress,
+  Typography
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -34,10 +35,7 @@ import * as Yup from "yup";
 
 const Products = () => {
   const queryClient = useQueryClient();
-  const {
-    data: products,
-    isSuccess
-  } = useQuery({
+  const { data: products, isSuccess } = useQuery({
     queryKey: ["products"],
     queryFn: () => getProductsFiltered(filterParams)
   });
@@ -254,6 +252,9 @@ const Products = () => {
       headerName: "Description",
       sortable: false,
       flex: 2
+      // renderCell: (params) => (
+      //   <div style={{ height: "20px", backgroundColor: "aqua" }}>{params.row.description}</div>
+      // )
     },
     {
       field: "totalSold",
@@ -283,35 +284,24 @@ const Products = () => {
       sortable: false,
       flex: 1.5,
       renderCell: (params) => (
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            flexDirection: "row",
-            gap: "5px",
-            justifyContent: "center",
-            alignItems: "center",
-            maxHeight: "60px",
-            overflowY: "auto",
-            padding: "10px 0px"
-          }}
-        >
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", padding: "10px 2px" }}>
           {params.row.productVariants.map((item, index) => {
             if (item.sku)
               return (
                 <div
                   key={index}
                   style={{
-                    backgroundColor: "#53609D",
-                    height: "30px",
-                    minWidth: "50px",
+                    minWidth: `${item.sku.length * 10}px`, // Dynamic minWidth based on content length
                     display: "flex",
+                    alignItems: "center", // Vertical alignment within item (optional)
                     padding: "2px 5px",
-                    justifyContent: "center",
-                    alignItems: "center",
+                    backgroundColor: "#53609D",
+                    color: "white",
                     border: "solid 1px gray",
                     borderRadius: "10px",
-                    color: "white"
+                    marginRight: "5px", // Optional margin for spacing between items
+                    // Optional: Set a fixed or maximum height
+                    height: "30px" // Example: Fixed height
                   }}
                 >
                   {item.sku}
@@ -324,8 +314,33 @@ const Products = () => {
     {
       field: "defaultImage",
       headerName: "Image",
+      headerAlign: "center",
       sortable: false,
-      flex: 2
+      flex: 2,
+      renderCell: (params) => (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            width: "100%",
+            height: "100%"
+          }}
+        >
+          <img
+            src={params.row.defaultImage || "path/to/default-image.png"}
+            alt="Product Image"
+            style={{
+              width: "100px", // Ensures image takes full available width within the cell
+              objectFit: "contain", // Resize proportionally to fit while maintaining aspect ratio
+              maxHeight: "250px" // Max height aligns with the row height
+            }}
+            onError={(event) => {
+              event.target.src = "path/to/alternative-image.png"; // Optional: Set alternative image on error
+            }}
+          />
+        </div>
+      )
     },
 
     {
@@ -335,34 +350,33 @@ const Products = () => {
       sortable: false,
       width: 200,
       renderCell: (params) => (
-        <strong>
-          <div
-            style={{
-              margin: "8px auto",
-              display: "flex",
-              gap: "10px",
-              alignItems: "center",
-              justifyContent: "center"
-            }}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+            justifyContent: "center",
+            height: "100%",
+            gap: "10px"
+          }}
+        >
+          <Button
+            sx={{ width: "100px" }}
+            color="success"
+            variant="outlined"
+            onClick={() => handleEdit(params.row.id)}
           >
-            <Button
-              sx={{ width: "70px" }}
-              color="success"
-              variant="outlined"
-              onClick={() => handleEdit(params.row.id)}
-            >
-              Edit
-            </Button>
-            <Button
-              sx={{ width: "100px" }}
-              color="error"
-              variant="outlined"
-              onClick={() => handleDelete(params.row.id)}
-            >
-              Delete
-            </Button>
-          </div>
-        </strong>
+            Edit
+          </Button>
+          <Button
+            sx={{ width: "100px" }}
+            color="error"
+            variant="outlined"
+            onClick={() => handleDelete(params.row.id)}
+          >
+            Delete
+          </Button>
+        </div>
       )
     }
   ];
@@ -416,6 +430,7 @@ const Products = () => {
         <DataGrid
           rows={products}
           columns={columns}
+          rowHeight={150}
           initialState={{
             pagination: {
               paginationModel: { page: 0, pageSize: 10 }
