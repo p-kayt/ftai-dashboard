@@ -226,20 +226,19 @@ const DetailModal = ({ open, setOpen, productId }) => {
                     >
                       <img
                         style={{
-                          height: "56px",
-                          width: "56px",
-                          borderRadius: "28px",
-                          backgroundColor: "aqua"
+                          height: "50px",
+                          width: "50px",
+                          borderRadius: "25px"
                         }}
                         src={item.user.profilePicture}
                       />
 
                       <div>
-                        <div style={{ fontWeight: "400", fontSize: "18px" }}>
+                        <div style={{ fontWeight: "400", fontSize: "16px" }}>
                           {item.user.fullName}
                         </div>
 
-                        <Rating name="read-only" value={item.rating} readOnly />
+                        <Rating name="read-only" size="small" value={item.rating} readOnly />
                       </div>
                     </div>
 
