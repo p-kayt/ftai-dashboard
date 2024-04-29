@@ -22,7 +22,7 @@ const Categories = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
   const handleEdit = (id) => {
     const data = categories.data.find((item) => item.id === id);
@@ -122,6 +122,11 @@ const Categories = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
           rows={categories.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
@@ -131,7 +136,7 @@ const Categories = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>
