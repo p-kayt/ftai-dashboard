@@ -25,7 +25,6 @@ const Models = () => {
   const [actionType, setActionType] = useState("create");
   const {
     data: models,
-    isLoading,
     isSuccess
   } = useQuery({
     queryKey: ["models"],

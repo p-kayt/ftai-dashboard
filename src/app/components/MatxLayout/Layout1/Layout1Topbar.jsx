@@ -1,26 +1,25 @@
+import {
+  Avatar,
+  Box,
+  Hidden,
+  IconButton,
+  MenuItem,
+  styled,
+  useMediaQuery,
+  useTheme
+} from "@mui/material";
 import { memo } from "react";
 import { Link } from "react-router-dom";
-import {
-  Box,
-  styled,
-  Avatar,
-  Hidden,
-  useTheme,
-  MenuItem,
-  IconButton,
-  useMediaQuery
-} from "@mui/material";
 
 import { NotificationProvider } from "app/contexts/NotificationContext";
 
 import useAuth from "app/hooks/useAuth";
 import useSettings from "app/hooks/useSettings";
 
-import { Span } from "app/components/Typography";
-import ShoppingCart from "app/components/ShoppingCart";
 import { MatxMenu, MatxSearchBox } from "app/components";
-import { NotificationBar } from "app/components/NotificationBar";
 import { themeShadows } from "app/components/MatxTheme/themeColors";
+import { NotificationBar } from "app/components/NotificationBar";
+import { Span } from "app/components/Typography";
 
 import { topBarHeight } from "app/utils/constant";
 
@@ -28,11 +27,8 @@ import {
   Home,
   Menu,
   Person,
-  Settings,
-  WebAsset,
-  MailOutline,
-  StarOutline,
-  PowerSettingsNew
+  PowerSettingsNew,
+  Settings
 } from "@mui/icons-material";
 
 // STYLED COMPONENTS
@@ -81,11 +77,6 @@ const StyledItem = styled(MenuItem)(({ theme }) => ({
     textDecoration: "none"
   },
   "& span": { marginRight: "10px", color: theme.palette.text.primary }
-}));
-
-const IconBox = styled("div")(({ theme }) => ({
-  display: "inherit",
-  [theme.breakpoints.down("md")]: { display: "none !important" }
 }));
 
 const Layout1Topbar = () => {

@@ -1,9 +1,8 @@
+import { ArrowRightAlt, AttachMoney, ShoppingCart, Store } from "@mui/icons-material";
 import { Box, Card, Grid, IconButton, styled, Tooltip } from "@mui/material";
-import { AttachMoney, Group, ShoppingCart, Store, ArrowRightAlt } from "@mui/icons-material";
-import { Small } from "app/components/Typography";
 import { useQuery } from "@tanstack/react-query";
-import { getAllOrders } from "api/orderApi";
 import { getRevenue } from "api/usersApi";
+import { Small } from "app/components/Typography";
 import { transNumberFormatter } from "app/utils/utils";
 
 // STYLED COMPONENTS

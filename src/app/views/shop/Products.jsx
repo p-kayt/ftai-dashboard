@@ -1,6 +1,7 @@
 import {
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogTitle,
   FormControlLabel,
@@ -9,9 +10,7 @@ import {
   MenuItem,
   Paper,
   Select,
-  TextField,
-  CircularProgress,
-  Typography
+  TextField
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -20,18 +19,13 @@ import { getAllBrands, getAllCategories, getAllColors, getAllSizes } from "api/o
 import {
   addNewProduct,
   deleteProductById,
-  getAllProducts,
   getProductsFiltered,
   updateProduct
 } from "api/productApi";
 import DetailModal from "app/components/DetailModel";
 import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
-import React from "react";
-import { useEffect } from "react";
-import { useRef } from "react";
-import { useCallback } from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 
@@ -317,6 +311,7 @@ const Products = () => {
                   {item.sku}
                 </div>
               );
+            return null;
           })}
         </div>
       )
@@ -340,7 +335,7 @@ const Products = () => {
         >
           <img
             src={params.row.defaultImage || "path/to/default-image.png"}
-            alt="Product Image"
+            alt="Product imgg"
             style={{
               width: "100px", // Ensures image takes full available width within the cell
               objectFit: "contain", // Resize proportionally to fit while maintaining aspect ratio
@@ -401,7 +396,6 @@ const Products = () => {
   ];
 
   const handleRowClick = (row) => {
-    const clickedRowId = row.id;
     setProductId(row.id);
     setOpenDetail(true);
   };
@@ -468,7 +462,7 @@ const Products = () => {
               outline: "none !important"
             }
           }}
-          // onRowClick={handleRowClick}
+        // onRowClick={handleRowClick}
         />
       )}
       {cateQuery.isSuccess &&

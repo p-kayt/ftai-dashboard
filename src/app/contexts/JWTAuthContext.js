@@ -3,7 +3,6 @@ import axios from "axios";
 // CUSTOM COMPONENT
 import { MatxLoading } from "app/components";
 import Swal from "sweetalert2";
-
 const initialState = {
   user: null,
   isInitialized: false,
@@ -50,7 +49,6 @@ const AuthContext = createContext({
 
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
-
   const login = async (email, password) => {
     try {
       const response = await axios.post("https://ftai-api.monoinfinity.net/api/auth/login", {
@@ -67,7 +65,20 @@ export const AuthProvider = ({ children }) => {
       const user = secondRes.data.data;
 
       if (user.roleId !== 1) {
-        dispatch({ type: "LOGIN", payload: { user } });
+        console.log(user.roleId);
+        if (user.roleId === 2) {
+          //staff login
+          dispatch({ type: "LOGIN", payload: { user } });
+          return "/shop/orders";
+        } else if (user.roleId === 3) {
+          //manager login
+          dispatch({ type: "LOGIN", payload: { user } });
+          return "/dashboard/default";
+        } else if (user.roleId === 4) {
+          //manager login
+          dispatch({ type: "LOGIN", payload: { user } });
+          return "/users/user";
+        }
       } else {
         Swal.fire("Error!", "Login attempt for admin user denied.", "error");
       }

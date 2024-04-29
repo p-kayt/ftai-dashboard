@@ -26,7 +26,7 @@ const DetailModal = ({ open, setOpen, productId }) => {
   useEffect(() => {
     queryClient.invalidateQueries("product");
     queryClient.invalidateQueries("review");
-  }, [productId]);
+  }, [productId, queryClient]);
   return (
     <div>
       <Dialog
@@ -88,6 +88,7 @@ const DetailModal = ({ open, setOpen, productId }) => {
               >
                 <div style={{ minWidth: "200px", height: "300px" }}>
                   <img
+                    alt="aaa"
                     style={{ objectFit: "cover", height: "100%" }}
                     src={selectedImg ? selectedImg.imageUrl : productQuery.data.data.defaultImage}
                   />
@@ -116,15 +117,16 @@ const DetailModal = ({ open, setOpen, productId }) => {
                       onClick={() => setSelectedImg(item)}
                     >
                       <img
+                        alt="aaa"
                         style={
                           selectedImg === item
                             ? {
-                                objectFit: "cover",
-                                height: "100%",
-                                position: "absolute",
-                                top: "-5px",
-                                border: "solid 1px black"
-                              }
+                              objectFit: "cover",
+                              height: "100%",
+                              position: "absolute",
+                              top: "-5px",
+                              border: "solid 1px black"
+                            }
                             : { objectFit: "cover", height: "100%" }
                         }
                         src={item.imageUrl}
@@ -225,6 +227,7 @@ const DetailModal = ({ open, setOpen, productId }) => {
                       }}
                     >
                       <img
+                        alt="aaa"
                         style={{
                           height: "50px",
                           width: "50px",

@@ -70,8 +70,8 @@ export default function JwtLogin() {
   const handleFormSubmit = async (values) => {
     setLoading(true);
     try {
-      await login(values.email, values.password);
-      navigate("/");
+      const redirect = await login(values.email, values.password);
+      navigate(redirect);
     } catch (e) {
       setLoading(false);
     }
