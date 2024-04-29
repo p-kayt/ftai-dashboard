@@ -19,7 +19,7 @@ const Brand = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("categories");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -119,6 +119,11 @@ const Brand = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
           rows={brands.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
@@ -128,7 +133,7 @@ const Brand = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

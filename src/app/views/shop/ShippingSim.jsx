@@ -6,6 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { acceptOrderbyIdnStatus, cancelOrderbyIdnStatus, getAllOrders } from "api/orderApi";
 import Loading from "app/components/MatxLoading";
 import { dateConvert, transNumberFormatter } from "app/utils/utils";
+import { Fragment } from "react";
 import Swal from "sweetalert2";
 
 export const processNumber = (number) => {
@@ -175,37 +176,38 @@ export default function ShippingSim() {
           {dateConvert(params.row.createAt)}
         </div>
       )
-    }
-  ];
-
-  const shouldRenderOptions = orders?.data?.filter((order) => order.status === 5);
-  if (shouldRenderOptions?.length > 0) {
-    columns.push({
+    }, {
       field: "options",
       headerName: "Options",
       headerAlign: "center",
       width: 500,
       renderCell: (params) => (
-        <div
-          style={{
-            margin: "0 auto",
-            display: "flex",
-            flexDirection: "row",
-            gap: "10px",
-            alignItems: "center",
-            justifyContent: "center"
-          }}
-        >
-          <Button variant="outlined" onClick={() => handleDelivered(params.row.id)}>
-            Confirm delivered
-          </Button>
-          <Button variant="outlined" color="error" onClick={() => handleCancelled(params.row.id)}>
-            Cancel delivered
-          </Button>
-        </div>
+        <Fragment>
+
+          {params.row.status === 5 ? <div
+            style={{
+              margin: "0 auto",
+              display: "flex",
+              flexDirection: "row",
+              gap: "10px",
+              alignItems: "center",
+              justifyContent: "center"
+            }}
+          >
+            <Button variant="outlined" onClick={() => handleDelivered(params.row.id)}>
+              Confirm delivered
+            </Button>
+            <Button variant="outlined" color="error" onClick={() => handleCancelled(params.row.id)}>
+              Cancel delivered
+            </Button>
+          </div> : null}
+        </Fragment>
       )
-    });
-  }
+    }
+  ];
+
+
+
 
   if (isFetching) {
     return <Loading />;
@@ -269,6 +271,11 @@ export default function ShippingSim() {
       </Box>
       {isSuccess && (
         <DataGrid
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
           rows={orders?.data?.filter((order) => order.status === 5 || order.status === 2)}
           columns={columns}
           initialState={{

@@ -187,6 +187,11 @@ export default function Orders() {
                 ))}
             </Box>
             {isSuccess && <DataGrid
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 rows={orders?.data}
                 columns={columns}
                 initialState={{
