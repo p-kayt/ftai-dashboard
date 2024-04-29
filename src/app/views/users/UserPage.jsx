@@ -196,6 +196,11 @@ export default function UserPage({ data, columns, isSuccess, refetch }) {
                 </Modal>
             </Box>
             {isSuccess && <DataGrid
+                sx={{
+                    "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+                        outline: "none !important",
+                    },
+                }}
                 rows={data}
                 columns={columns}
                 initialState={{

@@ -38,7 +38,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const modelUpdate = useMutation({
@@ -47,7 +47,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const modelDelete = useMutation({
@@ -56,7 +56,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -215,6 +215,11 @@ const Models = () => {
       </Button>
       {isSuccess && (
         <DataGrid
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
           rows={models.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
@@ -224,7 +229,7 @@ const Models = () => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
       <MyModal

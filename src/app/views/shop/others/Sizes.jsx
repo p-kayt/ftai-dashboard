@@ -20,7 +20,7 @@ const Sizes = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("sizes");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -119,6 +119,11 @@ const Sizes = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
           rows={sizes.data.filter((item) => !item.isDelete)}
           columns={columns}
           initialState={{
@@ -128,7 +133,7 @@ const Sizes = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

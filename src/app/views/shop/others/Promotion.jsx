@@ -21,7 +21,7 @@ const Promotion = (props) => {
     onSuccess: () => {
       queryClient.invalidateQueries("promotions");
     },
-    onError: (error) => {}
+    onError: (error) => { }
   });
 
   const handleEdit = (id) => {
@@ -142,6 +142,11 @@ const Promotion = (props) => {
       </Button>
       {isSuccess && (
         <DataGrid
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important",
+            },
+          }}
           rows={promos.data.filter((item) => !item.isDeleted)}
           columns={columns}
           initialState={{
@@ -151,7 +156,7 @@ const Promotion = (props) => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-          // checkboxSelection
+        // checkboxSelection
         />
       )}
     </div>

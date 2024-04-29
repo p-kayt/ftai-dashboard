@@ -463,6 +463,11 @@ const Products = () => {
           }}
           pageSizeOptions={[10, 20]}
           style={{ minHeight: "500px" }}
+          sx={{
+            "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+              outline: "none !important"
+            }
+          }}
           // onRowClick={handleRowClick}
         />
       )}
