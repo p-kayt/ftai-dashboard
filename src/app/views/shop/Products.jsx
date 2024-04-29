@@ -24,10 +24,12 @@ import {
   getProductsFiltered,
   updateProduct
 } from "api/productApi";
+import DetailModal from "app/components/DetailModel";
 import ImageUpload from "app/components/firebase/ImageUpload";
 import { FieldArray, Formik } from "formik";
 import React from "react";
 import { useEffect } from "react";
+import { useRef } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -103,6 +105,8 @@ const Products = () => {
   // });
 
   const [open, setOpen] = useState(false);
+  const [openDetail, setOpenDetail] = useState(false);
+  const [productId, setProductId] = useState();
   const [func, setFunc] = useState(null);
   const [imagesFetched, setImagesFetched] = useState(true);
   const [searchValue, setSearchValue] = useState("");
@@ -240,27 +244,28 @@ const Products = () => {
     {
       field: "id",
       headerName: "ID",
-      width: 70
+      width: 70,
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "name",
       headerName: "Name",
-      flex: 1
+      flex: 1,
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "description",
       headerName: "Description",
       sortable: false,
-      flex: 2
-      // renderCell: (params) => (
-      //   <div style={{ height: "20px", backgroundColor: "aqua" }}>{params.row.description}</div>
-      // )
+      flex: 2,
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "totalSold",
       headerName: "Total sold",
       // sortable: false,
-      width: 100
+      width: 100,
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "brand",
@@ -268,7 +273,8 @@ const Products = () => {
       // description: "This column has a value getter and is not sortable.",
       // sortable: false,
       width: 100,
-      valueGetter: (value) => value.name
+      valueGetter: (value) => value.name,
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "category",
@@ -276,7 +282,8 @@ const Products = () => {
       // description: "This column has a value getter and is not sortable.",
       // sortable: false,
       width: 100,
-      valueGetter: (value) => value.name
+      valueGetter: (value) => value.name,
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "sku",
@@ -284,7 +291,10 @@ const Products = () => {
       sortable: false,
       flex: 1.5,
       renderCell: (params) => (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "5px", padding: "10px 2px" }}>
+        <div
+          style={{ display: "flex", flexWrap: "wrap", gap: "5px", padding: "10px 2px" }}
+          onClick={() => handleRowClick(params.row)}
+        >
           {params.row.productVariants.map((item, index) => {
             if (item.sku)
               return (
@@ -326,6 +336,7 @@ const Products = () => {
             width: "100%",
             height: "100%"
           }}
+          onClick={() => handleRowClick(params.row)}
         >
           <img
             src={params.row.defaultImage || "path/to/default-image.png"}
@@ -349,37 +360,51 @@ const Products = () => {
       headerAlign: "center",
       sortable: false,
       width: 200,
-      renderCell: (params) => (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            flexDirection: "column",
-            justifyContent: "center",
-            height: "100%",
-            gap: "10px"
-          }}
-        >
-          <Button
-            sx={{ width: "100px" }}
-            color="success"
-            variant="outlined"
-            onClick={() => handleEdit(params.row.id)}
+      renderCell: (params) => {
+        return (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexDirection: "column",
+              justifyContent: "center",
+              height: "100%",
+              gap: "10px"
+            }}
           >
-            Edit
-          </Button>
-          <Button
-            sx={{ width: "100px" }}
-            color="error"
-            variant="outlined"
-            onClick={() => handleDelete(params.row.id)}
-          >
-            Delete
-          </Button>
-        </div>
-      )
+            <Button
+              sx={{ width: "100px" }}
+              color="success"
+              variant="outlined"
+              onClick={() => {
+                handleEdit(params.row.id); // Call handleEdit only if not options click
+
+                // Reset flag after click
+              }}
+            >
+              Edit
+            </Button>
+            <Button
+              sx={{ width: "100px" }}
+              color="error"
+              variant="outlined"
+              onClick={() => {
+                handleDelete(params.row.id); // Call handleDelete only if not options click
+              }}
+            >
+              Delete
+            </Button>
+          </div>
+        );
+      }
     }
   ];
+
+  const handleRowClick = (row) => {
+    const clickedRowId = row.id;
+    setProductId(row.id);
+    setOpenDetail(true);
+  };
 
   return (
     <div style={{ marginLeft: "20px", marginRight: "20px", marginTop: "20px" }}>
@@ -440,9 +465,10 @@ const Products = () => {
           style={{ minHeight: "500px" }}
           sx={{
             "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
+              outline: "none !important"
+            }
           }}
+          // onRowClick={handleRowClick}
         />
       )}
       {cateQuery.isSuccess &&
@@ -465,6 +491,7 @@ const Products = () => {
             updateCall={handleUpdate}
           />
         )}
+      {productId && <DetailModal open={openDetail} setOpen={setOpenDetail} productId={productId} />}
     </div>
   );
 };
