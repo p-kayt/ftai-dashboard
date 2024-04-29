@@ -5,6 +5,16 @@ export const getAllProducts = async (props) => {
   return res.data;
 };
 
+export const getProductById = async (props) => {
+  const res = await instance.get("/api/product/" + props.id);
+  return res.data;
+};
+
+export const getProductReview = async (props) => {
+  const res = await instance.get("/api/feedbacks/product/" + props.id);
+  return res.data;
+};
+
 export const deleteProductById = async (props) => {
   const { id } = props;
   const res = await instance.delete("/api/product/" + id);
