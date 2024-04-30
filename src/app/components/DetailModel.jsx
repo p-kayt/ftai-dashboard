@@ -60,7 +60,7 @@ const DetailModal = ({ open, setOpen, productId }) => {
             X
           </IconButton>
         </DialogTitle>
-        {!productQuery.isLoading ? (
+        {!productQuery.isFetching ? (
           <div
             style={{
               display: "flex",
