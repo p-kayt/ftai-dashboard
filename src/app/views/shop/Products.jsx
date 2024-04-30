@@ -462,7 +462,7 @@ const Products = () => {
               outline: "none !important"
             }
           }}
-        // onRowClick={handleRowClick}
+          // onRowClick={handleRowClick}
         />
       )}
       {cateQuery.isSuccess &&
@@ -535,6 +535,8 @@ const Modal = ({
       let result = Object.assign({}, obj1, values);
       result.properties = values.properties;
       // replace variant
+      result.defaultImage = values.images[0].url;
+      console.log(values.images[0]);
       result.productVariants = values.productVariants.map((variant) => {
         let size = sizes.find((size) => size.id === variant.sizeId);
         let color = colors.find((color) => color.id === variant.colorId);
@@ -552,7 +554,7 @@ const Modal = ({
           imageUrl: image.url
         };
       });
-
+      console.log(result);
       updateCall({ id: initProduct.id, data: result });
     }
     setOpen(false);

@@ -20,7 +20,15 @@ export default function UserChatWindow({ activeUserId, listUser }) {
   const inputRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
+
   useEffect(() => {
+    const createRoomIfNotExists = async () => {
+      let roomId = getRoomId("StaffIdToChat", activeUserId);
+      await setDoc(doc(db, "rooms", roomId), {
+        roomId,
+        createdAt: Timestamp.fromDate(new Date())
+      });
+    };
     createRoomIfNotExists();
 
     let roomId = getRoomId("StaffIdToChat", activeUserId);
@@ -36,14 +44,6 @@ export default function UserChatWindow({ activeUserId, listUser }) {
     });
     return unsub;
   }, [activeUserId]);
-
-  const createRoomIfNotExists = async () => {
-    let roomId = getRoomId("StaffIdToChat", activeUserId);
-    await setDoc(doc(db, "rooms", roomId), {
-      roomId,
-      createdAt: Timestamp.fromDate(new Date())
-    });
-  };
 
   const handleSendMassage = async () => {
     console.log(textRef.current);
