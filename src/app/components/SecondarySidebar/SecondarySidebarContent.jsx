@@ -1,10 +1,9 @@
-import { IconButton, styled } from "@mui/material";
 import Comment from "@mui/icons-material/Comment";
+import { IconButton, styled } from "@mui/material";
 
 import { Chatbox, ChatHead } from "app/components";
-import { Span } from "../Typography";
 import ShoppingCart from "../ShoppingCart";
-import MatxCustomizer from "../MatxCustomizer/MatxCustomizer";
+import { Span } from "../Typography";
 
 // STYLED COMPONENTS
 const SidebarRoot = styled("div")(({ theme, width }) => ({
