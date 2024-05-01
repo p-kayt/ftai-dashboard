@@ -222,7 +222,7 @@ const Products = () => {
   };
 
   const handleUpdate = (data) => {
-    console.log("update", data);
+    // console.log("update", data);
     updateMutation.mutate(data, {
       onSuccess: () => {
         queryClient.invalidateQueries("products");
@@ -536,7 +536,7 @@ const Modal = ({
       result.properties = values.properties;
       // replace variant
       result.defaultImage = values.images[0].url;
-      console.log(values.images[0]);
+      // console.log(values.images[0]);
       result.productVariants = values.productVariants.map((variant) => {
         let size = sizes.find((size) => size.id === variant.sizeId);
         let color = colors.find((color) => color.id === variant.colorId);
@@ -554,7 +554,7 @@ const Modal = ({
           imageUrl: image.url
         };
       });
-      console.log(result);
+      // console.log(result);
       updateCall({ id: initProduct.id, data: result });
     }
     setOpen(false);
@@ -580,7 +580,7 @@ const Modal = ({
     ],
     properties: []
   };
-  console.log(initProduct);
+  // console.log(initProduct);
   const [initData, setInitData] = useState({
     ...createData,
     name: initProduct.name,
@@ -656,8 +656,8 @@ const Modal = ({
           //   properties: initProduct.properties,
           //   images: initProduct.images.map((image) => ({ url: image.imageUrl }))
           // });
-          console.log("initData 2", createData);
-          console.log("initData 2", initData);
+          // console.log("initData 2", createData);
+          // console.log("initData 2", initData);
           setImagesFetched(true);
         })
         .finally();
