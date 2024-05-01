@@ -637,25 +637,25 @@ const Modal = ({
         })
         .catch((error) => {
           console.error(error);
-          // setInitData({
-          //   ...createData,
-          //   name: initProduct.name,
-          //   description: initProduct.description,
-          //   defaultImage: initProduct.defaultImage,
-          //   tryOnImage: initProduct.tryOnImage,
-          //   canTryOn: initProduct.canTryOn,
-          //   edgeImage: initProduct.edgeImage,
-          //   categoryId: initProduct.category.id,
-          //   brandId: initProduct.brand.id,
-          //   productVariants: initProduct.productVariants.map((variant) => ({
-          //     colorId: variant.colorId,
-          //     sizeId: variant.sizeId,
-          //     quantity: variant.quantity,
-          //     price: variant.price
-          //   })),
-          //   properties: initProduct.properties,
-          //   images: initProduct.images.map((image) => ({ url: image.imageUrl }))
-          // });
+          setInitData({
+            ...createData,
+            name: initProduct.name,
+            description: initProduct.description,
+            defaultImage: initProduct.defaultImage,
+            tryOnImage: initProduct.tryOnImage,
+            canTryOn: initProduct.canTryOn,
+            edgeImage: initProduct.edgeImage,
+            categoryId: initProduct.categoryId,
+            brandId: initProduct.brandId,
+            productVariants: initProduct.productVariants.map((variant) => ({
+              colorId: variant.colorId,
+              sizeId: variant.sizeId,
+              quantity: variant.quantity,
+              price: variant.price
+            })),
+            properties: initProduct.properties,
+            images: initProduct.images.map((image) => ({ url: image.imageUrl }))
+          });
           // console.log("initData 2", createData);
           // console.log("initData 2", initData);
           setImagesFetched(true);
