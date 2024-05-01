@@ -580,8 +580,26 @@ const Modal = ({
     ],
     properties: []
   };
-
-  const [initData, setInitData] = useState();
+  console.log(initProduct);
+  const [initData, setInitData] = useState({
+    ...createData,
+    name: initProduct.name,
+    description: initProduct.description,
+    defaultImage: initProduct.defaultImage,
+    tryOnImage: initProduct.tryOnImage,
+    canTryOn: initProduct.canTryOn,
+    edgeImage: initProduct.edgeImage,
+    categoryId: initProduct.categoryId,
+    brandId: initProduct.brandId,
+    productVariants: initProduct.productVariants.map((variant) => ({
+      colorId: variant.colorId,
+      sizeId: variant.sizeId,
+      quantity: variant.quantity,
+      price: variant.price
+    })),
+    properties: initProduct.properties,
+    images: initProduct.images.map((image) => ({ url: image.imageUrl }))
+  });
 
   if (type === "edit") {
     if (!imagesFetched) {
@@ -619,26 +637,27 @@ const Modal = ({
         })
         .catch((error) => {
           console.error(error);
-          setInitData({
-            ...createData,
-            name: initProduct.name,
-            description: initProduct.description,
-            defaultImage: initProduct.defaultImage,
-            tryOnImage: initProduct.tryOnImage,
-            canTryOn: initProduct.canTryOn,
-            edgeImage: initProduct.edgeImage,
-            categoryId: initProduct.category.id,
-            brandId: initProduct.brand.id,
-            productVariants: initProduct.productVariants.map((variant) => ({
-              colorId: variant.colorId,
-              sizeId: variant.sizeId,
-              quantity: variant.quantity,
-              price: variant.price
-            })),
-            properties: initProduct.properties,
-            images: initProduct.images.map((image) => ({ url: image.imageUrl }))
-          });
-          console.log("initData", initData);
+          // setInitData({
+          //   ...createData,
+          //   name: initProduct.name,
+          //   description: initProduct.description,
+          //   defaultImage: initProduct.defaultImage,
+          //   tryOnImage: initProduct.tryOnImage,
+          //   canTryOn: initProduct.canTryOn,
+          //   edgeImage: initProduct.edgeImage,
+          //   categoryId: initProduct.category.id,
+          //   brandId: initProduct.brand.id,
+          //   productVariants: initProduct.productVariants.map((variant) => ({
+          //     colorId: variant.colorId,
+          //     sizeId: variant.sizeId,
+          //     quantity: variant.quantity,
+          //     price: variant.price
+          //   })),
+          //   properties: initProduct.properties,
+          //   images: initProduct.images.map((image) => ({ url: image.imageUrl }))
+          // });
+          console.log("initData 2", createData);
+          console.log("initData 2", initData);
           setImagesFetched(true);
         })
         .finally();
@@ -785,7 +804,7 @@ const Modal = ({
                               <TextField
                                 style={{ width: "100%" }}
                                 label="Name"
-                                defaultValue={imgData.name ? imgData.name : ""}
+                                defaultValue={imgData?.name ? imgData?.name : ""}
                                 InputProps={{
                                   readOnly: true
                                 }}
