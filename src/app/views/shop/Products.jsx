@@ -581,25 +581,7 @@ const Modal = ({
     properties: []
   };
   // console.log(initProduct);
-  const [initData, setInitData] = useState({
-    ...createData,
-    name: initProduct.name,
-    description: initProduct.description,
-    defaultImage: initProduct.defaultImage,
-    tryOnImage: initProduct.tryOnImage,
-    canTryOn: initProduct.canTryOn,
-    edgeImage: initProduct.edgeImage,
-    categoryId: initProduct.categoryId,
-    brandId: initProduct.brandId,
-    productVariants: initProduct.productVariants.map((variant) => ({
-      colorId: variant.colorId,
-      sizeId: variant.sizeId,
-      quantity: variant.quantity,
-      price: variant.price
-    })),
-    properties: initProduct.properties,
-    images: initProduct.images.map((image) => ({ url: image.imageUrl }))
-  });
+  const [initData, setInitData] = useState();
 
   if (type === "edit") {
     if (!imagesFetched) {
