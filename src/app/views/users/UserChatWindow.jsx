@@ -15,11 +15,13 @@ import { useEffect, useRef, useState } from "react";
 import RenderMessage from "./RenderMessage";
 
 export default function UserChatWindow({ activeUserId, listUser }) {
-  console.log("activeUserId", activeUserId);
   const textRef = useRef("");
   const inputRef = useRef(null);
 
   const [messages, setMessages] = useState([]);
+
+  console.log('messages', messages)
+
 
   useEffect(() => {
     const createRoomIfNotExists = async () => {

@@ -61,6 +61,7 @@ export default function Orders() {
     });
     const navigate = useNavigate()
 
+    console.log('orders', orders)
 
     const columns = [
         {
@@ -106,7 +107,7 @@ export default function Orders() {
                     <Chip style={{
                         fontFamily: 'Poppins',
                         fontWeight: 600,
-                    }} label={processNumber(params.row.status)} color={processNumberColor(params.row.status)} />
+                    }} label={processNumber(params.row?.status)} color={processNumberColor(params.row?.status)} />
                 </div>
             )
         },
@@ -116,7 +117,7 @@ export default function Orders() {
             width: 200,
             renderCell: (params) => (
                 <div style={{ margin: "0 auto" }}>
-                    <Chip label={processStatusPayment(params.row.payment.status)} color={processStatusPaymentColor(params.row.payment.status)} style={{
+                    <Chip label={processStatusPayment(params.row.payment?.status)} color={processStatusPaymentColor(params.row.payment?.status)} style={{
                         fontFamily: 'Poppins',
                         fontWeight: 700,
                     }} />
