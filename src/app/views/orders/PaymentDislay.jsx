@@ -146,7 +146,7 @@ export default function PaymentDislay({ order, refetch }) {
             <div style={styles.container}>
                 <div style={styles.header}>
                     <div style={styles.title}>Payment</div>
-                    <Chip label={processStatusPayment(order.payment.status)} color={processStatusPaymentColor(order.payment.status)} style={{
+                    <Chip label={processStatusPayment(order?.payment?.status)} color={processStatusPaymentColor(order?.payment?.status)} style={{
                         fontFamily: 'Poppins',
                         fontWeight: 700,
                     }} />
@@ -155,18 +155,18 @@ export default function PaymentDislay({ order, refetch }) {
                     <div style={styles.chargeRow}>
                         <div style={styles.chargeLabel}>Payment method</div>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                            {order.payment.paymentMethod.name === 'Zalopay' && <img src='/assets/images/logos/7044033_zalo_icon.png' alt='temporary' />}
-                            <div style={styles.chargeAmount}>{order.payment.paymentMethod.name}</div>
+                            {order?.payment?.paymentMethod.name === 'Zalopay' && <img src='/assets/images/logos/7044033_zalo_icon.png' alt='temporary' />}
+                            <div style={styles.chargeAmount}>{order?.payment?.paymentMethod.name}</div>
                         </div>
                     </div>
-                    {order.payment.paymentMethod.name === 'Zalopay' && <>
+                    {order?.payment?.paymentMethod.name === 'Zalopay' && <>
                         <div style={styles.chargeRow}>
                             <div style={styles.chargeLabel}>Transaction id</div>
-                            <div style={styles.date}>{order.payment.transactionId}</div>
+                            <div style={styles.date}>{order?.payment?.transactionId}</div>
                         </div>
                         <div style={styles.chargeRow}>
                             <div style={styles.chargeLabel}>Transaction date</div>
-                            <div style={styles.date}>{formatDate(order.payment.transactionDate)}</div>
+                            <div style={styles.date}>{formatDate(order?.payment?.transactionDate)}</div>
                         </div>
                     </>}
                     <div style={styles.textCharge}>Charge</div>

@@ -7,7 +7,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 export default function UserListChat({ listUser, setActiveUserId, activeUserId }) {
   const [lastMessages, setLastMessages] = useState({});
-
   useEffect(() => {
     const unsubscribes = {};
 
@@ -19,10 +18,18 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
 
       unsubscribes[user.id] = onSnapshot(q, (snapshot) => {
         const allMessages = snapshot.docs.map((doc) => doc.data());
-        setLastMessages((prevState) => ({
-          ...prevState,
-          [user.id]: allMessages[0] || null
-        }));
+        // Check if there are any messages for this user
+        if (allMessages.length > 0) {
+          setLastMessages((prevState) => ({
+            ...prevState,
+            [user.id]: allMessages[0]
+          }));
+        } else {
+          setLastMessages((prevState) => ({
+            ...prevState,
+            [user.id]: null
+          }));
+        }
       });
     });
 
@@ -30,6 +37,7 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
       Object.values(unsubscribes).forEach((unsub) => unsub());
     };
   }, [listUser]);
+
 
   const renderLastMessage = (userId) => {
     const lastMessage = lastMessages[userId];
@@ -53,71 +61,78 @@ export default function UserListChat({ listUser, setActiveUserId, activeUserId }
   };
   return (
     <div>
-      {listUser.map((user) => (
-        <div
-          key={user.id}
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            height: "60px",
-            width: "350px",
-            padding: "10px",
-            gap: "10px",
-
-            borderBottom: "1px solid #E0E0E0",
-            ...(user.id === activeUserId && {
-              borderRight: "3px solid #53609D",
-              backgroundColor: "#CCD1E6"
-            })
-          }}
-          onClick={() => handleShare(user.id)}
-        >
-          <Avatar src={user.profilePicture} />
+      {listUser
+        .filter(user => lastMessages[user.id] !== null)
+        .sort((a, b) => {
+          const lastMessageA = lastMessages[a.id]?.createdAt;
+          const lastMessageB = lastMessages[b.id]?.createdAt;
+          return lastMessageB - lastMessageA;
+        })
+        .map((user) => (
           <div
+            key={user.id}
             style={{
               display: "flex",
-              width: "90%",
               flexDirection: "row",
+              height: "60px",
+              width: "350px",
+              padding: "10px",
               gap: "10px",
-              justifyContent: "space-between"
+              borderBottom: "1px solid #E0E0E0",
+              ...(user.id === activeUserId && {
+                borderRight: "3px solid #53609D",
+                backgroundColor: "#CCD1E6"
+              })
             }}
+            onClick={() => handleShare(user.id)}
           >
+            <Avatar src={user.profilePicture} />
             <div
               style={{
-                fontFamily: "Poppins",
-                fontWeight: 600,
-                width: "100%",
-                overflowX: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                scrollbarWidth: "none" /* For Firefox */,
-                msOverflowStyle: "none" /* For Internet Explorer and Edge */,
-                "&::-webkit-scrollbar": {
-                  display: "none"
-                },
-                cursor: "default"
+                display: "flex",
+                width: "90%",
+                flexDirection: "row",
+                gap: "10px",
+                justifyContent: "space-between"
               }}
             >
-              <div>{user.fullName}</div>
-              {/* Render last message for each user */}
               <div
                 style={{
                   fontFamily: "Poppins",
-                  fontWeight: 400,
-                  color: "gray",
-                  fontSize: "13px",
-                  width: "220px"
+                  fontWeight: 600,
+                  width: "100%",
+                  overflowX: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                  scrollbarWidth: "none", /* For Firefox */
+                  msOverflowStyle: "none", /* For Internet Explorer and Edge */
+                  "&::-webkit-scrollbar": {
+                    display: "none"
+                  },
+                  cursor: "default"
                 }}
               >
-                {renderLastMessage(user.id)}
+                <div>{user.fullName}</div>
+                {/* Render last message for each user */}
+                <div
+                  style={{
+                    fontFamily: "Poppins",
+                    fontWeight: 400,
+                    color: "gray",
+                    fontSize: "13px",
+                    width: "220px"
+                  }}
+                >
+                  {renderLastMessage(user.id)}
+                </div>
               </div>
+              <IconButton onClick={() => handleDeleteUser(user.id)}>
+                <DeleteIcon />
+              </IconButton>
             </div>
-            <IconButton onClick={() => handleDeleteUser(user.id)}>
-              <DeleteIcon />
-            </IconButton>
           </div>
-        </div>
-      ))}
+        ))}
     </div>
   );
+
 }
