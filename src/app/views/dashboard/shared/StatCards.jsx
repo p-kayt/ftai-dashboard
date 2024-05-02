@@ -33,18 +33,27 @@ const Heading = styled("h6")(({ theme }) => ({
 }));
 
 export default function StatCards() {
-
-  const {
-    data: revenue,
-  } = useQuery({
+  const { data: revenue } = useQuery({
     queryKey: ["revenue"],
     queryFn: getRevenue
   });
 
   const cardList = [
-    { name: "Revenue", amount: `${transNumberFormatter(revenue?.data?.totalRevenue)} VNĐ`, Icon: AttachMoney },
-    { name: "This Month Sales", amount: `${transNumberFormatter(revenue?.data?.monthlyRevenue)} VNĐ`, Icon: AttachMoney },
-    { name: "Inventory Status", amount: `${revenue?.data?.totalProductSell} products sold`, Icon: Store },
+    {
+      name: "Revenue",
+      amount: `${transNumberFormatter(revenue?.data?.totalRevenue)} VNĐ`,
+      Icon: AttachMoney
+    },
+    {
+      name: "This Month Sales",
+      amount: `${transNumberFormatter(revenue?.data?.monthlyRevenue)} VNĐ`,
+      Icon: AttachMoney
+    },
+    {
+      name: "Inventory Status",
+      amount: `${revenue?.data?.totalProductSell} products sold`,
+      Icon: Store
+    },
     { name: "Orders to deliver", amount: `${revenue?.data?.totalOrder} Orders`, Icon: ShoppingCart }
   ];
 
@@ -62,11 +71,11 @@ export default function StatCards() {
               </Box>
             </ContentBox>
 
-            <Tooltip title="View Details" placement="top">
+            {/* <Tooltip title="View Details" placement="top">
               <IconButton>
                 <ArrowRightAlt />
               </IconButton>
-            </Tooltip>
+            </Tooltip> */}
           </StyledCard>
         </Grid>
       ))}
