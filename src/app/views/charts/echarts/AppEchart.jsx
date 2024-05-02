@@ -3,7 +3,7 @@ import SimpleCard from "app/components/SimpleCard";
 import LineChart from "./LineChart";
 
 import ComparisonChart from "./ComparisonChart";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getNewUserByMonth, getRevByMonth, getRevByYear, getSaleTrend } from "api/dashboardApi";
 import { useState } from "react";
 
