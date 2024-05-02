@@ -6,7 +6,6 @@ import ComparisonChart from "./ComparisonChart";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getNewUserByMonth, getRevByMonth, getRevByYear, getSaleTrend } from "api/dashboardApi";
 import { useState } from "react";
-import { useEffect } from "react";
 
 // STYLED COMPONENT
 const Container = styled("div")(({ theme }) => ({
@@ -32,7 +31,7 @@ const Title = styled("span")(() => ({
 }));
 
 export default function AppEchart() {
-  const queryClient = useQueryClient();
+  // const queryClient = useQueryClient();
   function getCurrentMonth() {
     const date = new Date();
     const month = date.getMonth() + 1; // JavaScript months are 0-11, so we add 1 to get the current month
