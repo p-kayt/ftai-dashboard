@@ -41,7 +41,7 @@ const StyledRoot = styled("div")(() => ({
     display: "flex",
     padding: "2rem",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "center"
   }
 }));
 
@@ -83,9 +83,14 @@ export default function JwtLogin() {
         <Grid container>
           <Grid item sm={6} xs={12}>
             <div className="img-wrapper">
-              <img src="/assets/images/logos/ftai.png" width="100%" style={{
-                borderRadius: '12px'
-              }} alt="" />
+              <img
+                src="/assets/images/logos/ftai.png"
+                width="100%"
+                style={{
+                  borderRadius: "12px"
+                }}
+                alt=""
+              />
             </div>
           </Grid>
 
@@ -94,7 +99,8 @@ export default function JwtLogin() {
               <Formik
                 onSubmit={handleFormSubmit}
                 initialValues={initialValues}
-                validationSchema={validationSchema}>
+                validationSchema={validationSchema}
+              >
                 {({ values, errors, touched, handleChange, handleBlur, handleSubmit }) => (
                   <form onSubmit={handleSubmit}>
                     <TextField
@@ -140,11 +146,11 @@ export default function JwtLogin() {
                         <Paragraph>Remember Me</Paragraph>
                       </FlexBox>
 
-                      <NavLink
+                      {/* <NavLink
                         to="/session/forgot-password"
                         style={{ color: theme.palette.primary.main }}>
                         Forgot password?
-                      </NavLink>
+                      </NavLink> */}
                     </FlexBox>
 
                     <LoadingButton
@@ -152,18 +158,10 @@ export default function JwtLogin() {
                       color="primary"
                       loading={loading}
                       variant="contained"
-                      sx={{ my: 2 }}>
+                      sx={{ my: 2 }}
+                    >
                       Login
                     </LoadingButton>
-
-                    <Paragraph>
-                      Don't have an account?
-                      {/* <NavLink
-                        to="/session/signup"
-                        style={{ color: theme.palette.primary.main, marginLeft: 5 }}>
-                        Register
-                      </NavLink> */}
-                    </Paragraph>
                   </form>
                 )}
               </Formik>
