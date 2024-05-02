@@ -1,12 +1,10 @@
-import { Box, Card, MenuItem, Select, styled, useTheme } from "@mui/material";
+import { Box, styled, useTheme } from "@mui/material";
 import SimpleCard from "app/components/SimpleCard";
 import LineChart from "./LineChart";
 
 import ComparisonChart from "./ComparisonChart";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getNewUserByMonth, getRevByMonth, getRevByYear, getSaleTrend } from "api/dashboardApi";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getNewUserByMonth, getRevByMonth, getSaleTrend } from "api/dashboardApi";
 
 // STYLED COMPONENT
 const Container = styled("div")(({ theme }) => ({
@@ -15,24 +13,7 @@ const Container = styled("div")(({ theme }) => ({
   "& .breadcrumb": { marginBottom: 30, [theme.breakpoints.down("sm")]: { marginBottom: 16 } }
 }));
 
-// STYLED COMPONENTS
-const CardHeader = styled(Box)(() => ({
-  display: "flex",
-  paddingLeft: "24px",
-  paddingRight: "24px",
-  marginBottom: "12px",
-  alignItems: "center",
-  justifyContent: "space-between"
-}));
-
-const Title = styled("span")(() => ({
-  fontSize: "1rem",
-  fontWeight: "500",
-  textTransform: "capitalize"
-}));
-
 export default function AppEchart() {
-  const queryClient = useQueryClient();
   function getCurrentMonth() {
     const date = new Date();
     const month = date.getMonth() + 1; // JavaScript months are 0-11, so we add 1 to get the current month
@@ -48,14 +29,7 @@ export default function AppEchart() {
     }
     return month;
   }
-  function getRecentYears() {
-    const currentYear = new Date().getFullYear();
-    return [currentYear, currentYear - 1, currentYear - 2];
-  }
 
-  const years = getRecentYears();
-  const [chartType, setChartType] = useState(0);
-  const [selectedValue, setSelectedValue] = useState(-1);
   const currentMonth = getCurrentMonth();
   const previousMonth = getPreviousMonth();
 
@@ -80,21 +54,12 @@ export default function AppEchart() {
     queryFn: () => getRevByMonth({ noMonths: 6 })
   });
 
-  const revenueQueryByYear = useQuery({
-    // Include selectedValue in queryKey for re-fetching based on selection
-    queryKey: ["revenueByYear", selectedValue],
-    queryFn: () => getRevByYear(selectedValue === -1 ? years[0] : years[selectedValue])
-  });
-
-  const handleSelectChange = (value) => {
-    // queryClient.invalidateQueries("revenueByYear");
-    setSelectedValue(value);
-    if (value === -1) {
-      setChartType(0);
-    } else {
-      setChartType(1);
-    }
-  };
+  // if (trendQuery.isSuccess) {
+  //   console.log(trendQuery.data);
+  // }
+  // if (revenueQuery.isSuccess) {
+  //   console.log(revenueQuery.data);
+  // }
 
   return (
     <Container>
@@ -114,40 +79,15 @@ export default function AppEchart() {
 
       <Box sx={{ py: "12px" }} />
 
-      <Card elevation={3} sx={{ pt: "20px", mb: 3 }}>
-        <CardHeader>
-          <Title>Total revenue (VNĐ/month)</Title>
-          <Select
-            size="small"
-            value={selectedValue}
-            onChange={(event) => handleSelectChange(event.target.value)}
-          >
-            <MenuItem value={-1}>Last 6 months</MenuItem>
-            {years.map((item, index) => (
-              <MenuItem key={index} value={index}>
-                {item}
-              </MenuItem>
-            ))}
-          </Select>
-        </CardHeader>
-
-        {revenueQuery.isSuccess && chartType === 0 && (
+      <SimpleCard title="Total revenue (VNĐ/month)">
+        {revenueQuery.isSuccess && (
           <ComparisonChart
             height="350px"
             color={[theme.palette.primary.dark, theme.palette.primary.light]}
-            data={revenueQuery.data?.data}
-            chartType={chartType}
+            data={revenueQuery.data.data}
           />
         )}
-        {revenueQueryByYear.isSuccess && chartType === 1 && (
-          <ComparisonChart
-            height="350px"
-            color={[theme.palette.primary.dark, theme.palette.primary.light]}
-            data={revenueQueryByYear.data?.data}
-            chartType={chartType}
-          />
-        )}
-      </Card>
+      </SimpleCard>
 
       <Box sx={{ py: "12px" }} />
 
