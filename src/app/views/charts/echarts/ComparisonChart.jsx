@@ -1,9 +1,15 @@
 import { useTheme } from "@mui/material/styles";
 import ReactEcharts from "echarts-for-react";
 
-export default function ComparisonChart({ height, color = [], data, chartType }) {
+export default function ComparisonChart({ height, color = [], data }) {
   const theme = useTheme();
-  // console.log({ data, chartType });
+  data.sort((a, b) => {
+    if ((b.month % 12) + 1 === a.month) {
+      return 1;
+    } else {
+      return -1;
+    }
+  });
   function getMonthName(monthNumber) {
     const monthNames = [
       "January",
@@ -20,16 +26,6 @@ export default function ComparisonChart({ height, color = [], data, chartType })
       "December"
     ];
     return monthNames[monthNumber - 1]; // subtract 1 because array indices start at 0
-  }
-
-  if (chartType === 0) {
-    data.sort((a, b) => {
-      if ((b.month % 12) + 1 === a.month) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
   }
   let option = {
     grid: { top: "10%", bottom: "10%", right: "5%" },
@@ -54,14 +50,10 @@ export default function ComparisonChart({ height, color = [], data, chartType })
       axisLine: { show: false },
       axisTick: { show: false },
       splitLine: { lineStyle: { color: theme.palette.text.secondary, opacity: 0.15 } },
-      axisLabel: {
-        fontSize: 13,
-        fontFamily: "roboto",
-        color: theme.palette.text.secondary
-      },
-      minInterval: 1000
+      axisLabel: { fontSize: 13, fontFamily: "roboto", color: theme.palette.text.secondary }
     },
-
+    // Declare several bar series, each will be mapped
+    // to a column of dataset.source by default.
     series: [{ type: "bar" }]
   };
 

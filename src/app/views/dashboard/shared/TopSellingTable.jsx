@@ -58,10 +58,10 @@ export default function TopSellingTable() {
     <Card elevation={3} sx={{ pt: "20px", mb: 3 }}>
       <CardHeader>
         <Title>top selling products</Title>
-        {/* <Select size="small" defaultValue="this_month">
+        <Select size="small" defaultValue="this_month">
           <MenuItem value="this_month">This Month</MenuItem>
           <MenuItem value="last_month">Last Month</MenuItem>
-        </Select> */}
+        </Select>
       </CardHeader>
 
       <Box overflow="auto">
@@ -81,9 +81,9 @@ export default function TopSellingTable() {
                   Total Sold
                 </TableCell>
 
-                {/* <TableCell colSpan={1} sx={{ px: 0 }}>
+                <TableCell colSpan={1} sx={{ px: 0 }}>
                   Action
-                </TableCell> */}
+                </TableCell>
               </TableRow>
             </TableHead>
 
@@ -140,11 +140,11 @@ export default function TopSellingTable() {
                     ) : null}
                   </TableCell>
 
-                  {/* <TableCell sx={{ px: 0 }} colSpan={1}>
+                  <TableCell sx={{ px: 0 }} colSpan={1}>
                     <IconButton>
                       <Edit color="primary" />
                     </IconButton>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

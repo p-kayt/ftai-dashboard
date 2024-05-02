@@ -239,16 +239,7 @@ const Products = () => {
       field: "id",
       headerName: "ID",
       width: 70,
-      renderCell: (params) => (
-        <div
-          onClick={() => {
-            // console.log(params);
-            handleRowClick(params.row);
-          }}
-        >
-          {params.value}
-        </div>
-      )
+      renderCell: (params) => <div onClick={() => handleRowClick(params.row)}>{params.value}</div>
     },
     {
       field: "name",

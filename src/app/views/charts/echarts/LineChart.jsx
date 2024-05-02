@@ -3,7 +3,7 @@ import ReactEcharts from "echarts-for-react";
 
 export default function LineChart({ height, color = [], currMonth, prevMonth, type }) {
   const theme = useTheme();
-  // console.log({ currMonth, prevMonth });
+  console.log({ currMonth, prevMonth });
   let option = {
     grid: { top: "10%", bottom: "10%", left: "5%", right: "5%" },
     legend: {
@@ -107,8 +107,8 @@ export default function LineChart({ height, color = [], currMonth, prevMonth, ty
       {
         data: currMonth.map((item) => item.totalNewUser),
         type: "line",
-        stack: "Last 5 months",
-        name: "Last 5 months",
+        stack: "This month",
+        name: "This month",
         smooth: true,
         symbolSize: 4,
         lineStyle: { width: 4 }
