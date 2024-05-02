@@ -14,8 +14,8 @@ export const navigations = [
   },
   {
     name: "Statistics Charts",
-    icon: "chart",
     path: "/charts/echarts",
+    icon: "addchart",
     role: authRoles.manager
   },
   {
