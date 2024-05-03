@@ -665,7 +665,7 @@ const Modal = ({
     // Add other properties as needed
   });
 
-  const validate = Yup.object().shape({
+  const newValidate = Yup.object().shape({
     name: Yup.string().required("Required"),
     description: Yup.string().required("Required"),
     defaultImage: Yup.string().nullable(),
@@ -680,6 +680,26 @@ const Modal = ({
         colorId: Yup.string().nullable(),
         sizeId: Yup.string().nullable(),
         quantity: Yup.number().min(1),
+        price: Yup.number().min(0)
+      })
+    )
+  });
+
+  const upValidate = Yup.object().shape({
+    name: Yup.string().required("Required"),
+    description: Yup.string().required("Required"),
+    defaultImage: Yup.string().nullable(),
+    tryOnImage: Yup.string().nullable(),
+    canTryOn: Yup.boolean(),
+    edgeImage: Yup.string().nullable(),
+    categoryId: Yup.string().nullable(),
+    brandId: Yup.string().nullable(),
+    images: Yup.array().of(imageSchema).min(1, "At least one image is required"),
+    productVariants: Yup.array().of(
+      Yup.object().shape({
+        colorId: Yup.string().nullable(),
+        sizeId: Yup.string().nullable(),
+        quantity: Yup.number().min(0),
         price: Yup.number().min(0)
       })
     )
@@ -722,7 +742,7 @@ const Modal = ({
           <Formik
             onSubmit={handleFormSubmit}
             initialValues={type === "create" ? createData : initData}
-            validationSchema={validate}
+            validationSchema={type === "create" ? newValidate : upValidate}
           >
             {({ values, handleChange, handleSubmit, setFieldValue, errors, touched }) => (
               <form
