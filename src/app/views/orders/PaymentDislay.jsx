@@ -52,7 +52,8 @@ export default function PaymentDislay({ order, refetch }) {
             setLoading(false)
         },
         onError: (error) => {
-            console.log(error)
+            console.log(error.response.data.message)
+            Swal.fire("Error!",error.response.data.message, "error");
             setLoading(false)
         }
     });
