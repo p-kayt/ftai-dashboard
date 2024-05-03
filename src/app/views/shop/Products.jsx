@@ -452,6 +452,16 @@ const Products = () => {
         >
           Search
         </Button>
+        <Button
+          variant="contained"
+          style={{ backgroundColor: "#53609D", height: "40px" }}
+          onClick={()=>{
+            queryClient.invalidateQueries("products");
+
+          }}
+        >
+          Refresh
+        </Button>
       </div>
 
       {isSuccess && (
@@ -518,6 +528,7 @@ const Modal = ({
 }) => {
   const handleFormSubmit = (values) => {
     // setProduct(newProduct);
+    console.log("submit",values);
     if (type === "create") {
       let newProduct = {
         name: values.name,
@@ -545,7 +556,9 @@ const Modal = ({
       result.properties = values.properties;
       // replace variant
       result.defaultImage = values.images[0].url;
-      // console.log(values.images[0]);
+      console.log('values', result.categoryId);
+    result.categoryId = values.categoryId;
+    result.brandId = values.brandId;  
       result.productVariants = values.productVariants.map((variant) => {
         let size = sizes.find((size) => size.id === variant.sizeId);
         let color = colors.find((color) => color.id === variant.colorId);
@@ -589,7 +602,7 @@ const Modal = ({
     ],
     properties: []
   };
-  console.log(initProduct);
+  // console.log(initProduct);
   const [initData, setInitData] = useState();
   // console.log(initData);
   if (type === "edit") {
@@ -908,7 +921,7 @@ const Modal = ({
                         name="brandId"
                         labelId="brand-label"
                         value={values.brandId}
-                        onChange={handleChange}
+                        onChange={(event) => setFieldValue("brandId", event.target.value)}
                         renderValue={(brandId) => brands.find((brand) => brand.id === brandId).name}
                       >
                         {brands.map((brand) => (
@@ -926,7 +939,12 @@ const Modal = ({
                           labelid="cate-label"
                           style={{ width: "150px" }}
                           value={values.categoryId}
-                          onChange={handleChange}
+                          onChange={(event) => {
+                            console.log(event.target.value);
+                            setFieldValue("categoryId", event.target.value)
+                          }
+                           
+                          }
                           renderValue={(categoryId) =>
                             categories.find((category) => category.id === categoryId).name
                           }
