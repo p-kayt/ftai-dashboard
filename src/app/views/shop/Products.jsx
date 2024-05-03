@@ -589,9 +589,9 @@ const Modal = ({
     ],
     properties: []
   };
-  // console.log(initProduct);
+  console.log(initProduct);
   const [initData, setInitData] = useState();
-
+  // console.log(initData);
   if (type === "edit") {
     if (!imagesFetched) {
       let newImgs = [];
@@ -623,7 +623,7 @@ const Modal = ({
             properties: initProduct.properties,
             images: newImgs
           });
-          console.log("initData", initData);
+          // console.log("initData", initData);
           setImagesFetched(true); // Set imagesFetched to true after images have been fetched
         })
         .catch((error) => {
@@ -645,7 +645,10 @@ const Modal = ({
               price: variant.price
             })),
             properties: initProduct.properties,
-            images: initProduct.images.map((image) => ({ url: image.imageUrl }))
+            images: initProduct.images.map((image) => ({
+              url: image.imageUrl,
+              name: image.imageUrl
+            }))
           });
           // console.log("initData 2", createData);
           // console.log("initData 2", initData);
