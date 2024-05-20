@@ -23,10 +23,7 @@ const Models = () => {
   const [initValue, setInitValue] = useState();
   const [isModalOpen, setModalOpen] = useState(false);
   const [actionType, setActionType] = useState("create");
-  const {
-    data: models,
-    isSuccess
-  } = useQuery({
+  const { data: models, isSuccess } = useQuery({
     queryKey: ["models"],
     queryFn: getAllModels
   });
@@ -37,7 +34,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const modelUpdate = useMutation({
@@ -46,7 +43,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const modelDelete = useMutation({
@@ -55,7 +52,7 @@ const Models = () => {
     onSuccess: () => {
       queryClient.invalidateQueries("models");
     },
-    onError: (error) => { }
+    onError: (error) => {}
   });
 
   const handleEdit = (id) => {
@@ -153,6 +150,17 @@ const Models = () => {
       }
     },
     {
+      field: "height",
+      headerName: "Height(Cm)",
+      flex: 1
+    },
+    {
+      field: "weight",
+      headerName: "Weight(Kg)",
+      flex: 1
+    },
+
+    {
       field: "imageUrl",
       headerName: "Image URL",
       flex: 5,
@@ -216,8 +224,8 @@ const Models = () => {
         <DataGrid
           sx={{
             "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
-              outline: "none !important",
-            },
+              outline: "none !important"
+            }
           }}
           rows={models.data.filter((item) => !item.isDelete)}
           columns={columns}
@@ -228,7 +236,7 @@ const Models = () => {
           }}
           pageSizeOptions={[5, 10]}
           disableColumnResize
-        // checkboxSelection
+          // checkboxSelection
         />
       )}
       <MyModal
@@ -259,9 +267,10 @@ const MyModal = ({ open, setOpen, type, initData, addCall, updateCall }) => {
   const validate = Yup.object().shape({
     name: Yup.string().required("Name is required"),
     gender: Yup.number().required("Gender is required").oneOf([0, 1], "Invalid gender"),
+    height: Yup.number().required("Height is required").min(0, "Height cannot be negative"),
+    weight: Yup.number().required("Weight is required").min(0, "Weight cannot be negative"),
     imageUrl: Yup.string().url("Must be a valid URL").required("Image URL is required")
   });
-
   const createData = {
     name: undefined,
     gender: 0,
@@ -347,7 +356,28 @@ const MyModal = ({ open, setOpen, type, initData, addCall, updateCall }) => {
                   <MenuItem value={1}>Female</MenuItem>
                 </Select>
               </FormControl>
-
+              <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
+                <TextField
+                  name="height"
+                  label="Height"
+                  variant="outlined"
+                  type="number"
+                  value={values.height}
+                  error={touched.height && Boolean(errors.height)}
+                  helperText={touched.height && errors.height}
+                  onChange={(e) => setFieldValue("height", e.target.value)}
+                />
+                <TextField
+                  name="weight"
+                  label="Weight"
+                  variant="outlined"
+                  type="number"
+                  value={values.weight}
+                  error={touched.weight && Boolean(errors.weight)}
+                  helperText={touched.weight && errors.weight}
+                  onChange={(e) => setFieldValue("weight", e.target.value)}
+                />
+              </div>
               <TextField
                 name="imageUrl"
                 label="Image URL"
