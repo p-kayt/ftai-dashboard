@@ -15,6 +15,8 @@ export const processNumber = (number) => {
       return "Delivering";
     case 2:
       return "Delivered";
+    case 3:
+      return "Cancelled";
     default:
       return "Unknow Status";
   }
@@ -25,6 +27,8 @@ export const processNumberColor = (number) => {
       return "info";
     case 2:
       return "success";
+    case 3:
+      return "error";
     default:
       return "default";
   }
@@ -59,6 +63,7 @@ export default function ShippingSim() {
     },
     onError: (error) => {
       console.log(error);
+      Swal.fire("Error!", error.response.data.message, "error");
     }
   });
   const handleDelivered = async (id) => {
@@ -276,7 +281,7 @@ export default function ShippingSim() {
               outline: "none !important",
             },
           }}
-          rows={orders?.data?.filter((order) => order.status === 5 || order.status === 2)}
+          rows={orders?.data?.filter((order) => order.status === 5 || order.status === 2|| order.status === 3)}
           columns={columns}
           initialState={{
             pagination: {
